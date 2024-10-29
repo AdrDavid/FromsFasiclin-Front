@@ -1,72 +1,170 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect, Fragment } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import { useReactToPrint } from "react-to-print";
+import axios from "axios";
+import pacientesPdf from "./relatorio";
+import { format, parseISO } from "date-fns";
+import { FaRegFilePdf } from "react-icons/fa6";
 export default function Desh() {
-  //   const componentRef = useRef();
+  const [pacientes, setPacientes] = useState([]);
 
-  //   const handlePrint = () => {
-  //     document.title = "Fasiclin";
-  //     const printContent = componentRef.current;
-  //     const windowContent = document.body.innerHTML;
+  const [filtrar, setFiltrar] = useState({
+    tipoPaciente: "",
+    periodo: "",
+    dataExpedicao: "",
+    nomePaciente: "",
+    nomeAluno: "",
+    sobrenomeAluno: "",
+    clinica: "",
+  });
 
-  //     // Salva todo o conteúdo da página
-  //     document.body.innerHTML = printContent.innerHTML;
+  const limpar = () => {
+    setFiltrar({
+      tipoPaciente: "",
+      periodo: "",
+      dataExpedicao: "",
+      nomePaciente: "",
+      nomeAluno: "",
+      sobrenomeAluno: "",
+      clinica: "",
+    });
+  };
 
-  //     // Chama a impressão
-  //     window.print();
-  //     document.title = originalTitle;
-  //     // Restaura o conteúdo original
-  //     document.body.innerHTML = windowContent;
-  //     window.location.reload();
-  //   };
+  const handleFiltrar = (event) => {
+    const { name, value } = event.target;
+    setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
+  };
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/forms").then((response) => {
+      const dataEntrada = response.data.map((paciente) => ({
+        ...paciente,
+        dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
+      }));
+
+      setPacientes(dataEntrada);
+    });
+  }, []);
+
+  function filtro(pacientes) {
+    return pacientes.filter((paciente) => {
+      const contemTexto = (texto, busxa) => {
+        if (!texto || !busxa) return true;
+        return texto.toLowerCase().includes(busxa.toLowerCase());
+      };
+      const condicoes = [
+        // Filtros exatos (precisam ser iguais)
+        filtrar.tipoPaciente === "" ||
+          paciente.tipoPaciente === filtrar.tipoPaciente,
+        filtrar.periodo === "" || paciente.periodo === filtrar.periodo,
+        filtrar.dataExpedicao === "" ||
+          paciente.dataExpedicao === filtrar.dataExpedicao,
+        filtrar.clinica === "" || paciente.clinica === filtrar.clinica,
+
+        // Filtros parciais (basta conter o texto)
+        contemTexto(paciente.nomePaciente, filtrar.nomePaciente),
+        contemTexto(paciente.nomeAluno, filtrar.nomeAluno),
+        contemTexto(paciente.sobrenomeAluno, filtrar.sobrenomeAluno),
+      ];
+
+      return condicoes.every((condicao) => condicao);
+    });
+  }
 
   return (
     <>
       <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
-        <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center ">
+        <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
           <img src={Logo} alt="" className="h-[70px]" />
           <img src={Fasipe} alt="" className="h-[60px]" />
+          <div className="w-[120px] min-h-[20px] bg-[#868686] absolute right-[0px] "  >
+            
+          </div>
         </div>
         <br />
         <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]  ">
           <div className="w-[100%] flex flex-wrap  gap-[10px]">
-            <input
-              type="text"
-              placeholder="Atendimento"
-              className=" shrink w-[150px] rounded-[8px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
-            />
             <select
-              name=""
+              onChange={handleFiltrar}
+              name="clinica"
+              value={filtrar.clinica}
               id=""
-              className="shrink rounded-[8px] w-[150px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
+            >
+              <option value="">Clinica</option>
+              <option value="Clinica 1">Clinica I</option>
+              <option value="Clinica 2">Clinica II</option>
+              <option value="Clinica 3">Clinica III</option>
+            </select>
+            <select
+              onChange={handleFiltrar}
+              name="tipoPaciente"
+              value={filtrar.tipoPaciente}
+              id=""
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
+            >
+              <option value="">Atendimento</option>
+              <option value="Pediatria">Pediatria</option>
+              <option value="Adulto">Adulto</option>
+              <option value="Geriatria">Geriatria</option>
+            </select>
+            <select
+              onChange={handleFiltrar}
+              name="periodo"
+              value={filtrar.periodo}
+              id=""
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
             >
               <option value="">Período</option>
-              <option value="">Matutino</option>
-              <option value="">Noturno</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Noturno">Noturno</option>
             </select>
             <input
+              onChange={handleFiltrar}
+              name="nomeAluno"
+              value={filtrar.nomeAluno}
               type="text"
               placeholder="Aluno"
-              className="shrink rounded-[8px] w-[150px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
             />
             <input
+              onChange={handleFiltrar}
+              name="nomePaciente"
+              value={filtrar.nomePaciente}
               type="text"
               placeholder="Paciente"
-              className="shrink rounded-[8px] w-[150px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
             />
             <input
+              onChange={handleFiltrar}
+              name="dataExpedicao"
+              value={filtrar.dataExpedicao}
               type="date"
-              className="shrink rounded-[8px] w-[150px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[5px]  text-[17px] h-[40px] border-[1px] border-[#000000]"
             />
+
+            <button
+              onClick={limpar}
+              className="100px rounded-[8px] w-[150px] bg-[#2376d4] text-[#ffffff]   text-[20px] h-[40px] border-[1px] border-[#ffffff]"
+            >
+              Limpar
+            </button>
           </div>
           <br />
-          <br />
-
-          <div className="content min-h-[100px]" ref={componentRef}>
-            <table className="table-auto w-[100%] border-separate border-spacing-0 ">
+          <div className="flex justify-end">
+            <button
+              onClick={() => pacientesPdf(filtro(pacientes))}
+              className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
+            >
+              <FaRegFilePdf />
+            </button>
+          </div>
+          <div className="content min-h-[100px]">
+            <table className="table-auto w-[100%]  ">
               <thead>
-                <tr className="text-left ">
+                <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#8afab1] ">
+                  <th className="">Clínica</th>
                   <th className="">Atendimento</th>
                   <th className="">Paciente</th>
                   <th className="">Aluno</th>
@@ -76,37 +174,33 @@ export default function Desh() {
               </thead>
 
               <tbody className=" ">
-                <tr className="h-2" />
-                <tr className="">
-                  <td className="border border-[#000] p-1 rounded-l-[8px]">
-                    Adulto
-                  </td>
-                  <td className="border border-[#000] p-1">David</td>
-                  <td className="border border-[#000] p-1">Adriano</td>
-                  <td className="border border-[#000] p-1">Matutino</td>
-                  <td className="border border-[#000] p-1 rounded-r-[8px]">
-                    27/11/2024
-                  </td>
-                </tr>
-                <tr className="h-2" />
-                <tr>
-                  <td className="border border-[#000] p-1 rounded-l-[8px]">
-                    Pediatria
-                  </td>
-                  <td className="border border-[#000] p-1">Adriano</td>
-                  <td className="border border-[#000] p-1">David</td>
-                  <td className="border border-[#000] p-1">Matutino</td>
-                  <td className="border border-[#000] p-1 rounded-r-[8px]">
-                    27/11/2024
-                  </td>
-                </tr>
+                {filtro(pacientes).map((paciente) => (
+                  <Fragment key={paciente.id}>
+                    {/* <tr className="h-2" /> */}
+                    <tr
+                      className={`${
+                        pacientes.indexOf(paciente) % 2 === 0
+                          ? "bg-[#8afab1]"
+                          : ""
+                      }`}
+                    >
+                      <td className="p-1 ">{paciente.clinica}</td>
+                      <td className="">{paciente.tipoPaciente}</td>
+                      <td className="">{paciente.nomePaciente}</td>
+                      <td className="">
+                        {paciente.nomeAluno} {paciente.sobrenomeAluno}
+                      </td>
+                      <td className="">{paciente.periodo}</td>
+                      <td className="  p-1 ">
+                        {format(parseISO(paciente.dataExpedicao), "dd-MM-yyyy")}
+                      </td>
+                    </tr>
+                  </Fragment>
+                ))}
               </tbody>
             </table>
           </div>
-
-          <button className="rounded-[8px] p-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000] ">
-            PDF
-          </button>
+          <br />
         </div>
         <br />
       </div>

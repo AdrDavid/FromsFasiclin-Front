@@ -1,11 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
+import axios from "axios";
 export default function Forms() {
+  const [erro, setErro] = useState("");
+
+  const cadastrar = (e) => {
+    e.preventDefault();
+    const dados = {
+      RA: e.target.ra.value,
+      nomeAluno: e.target.nomeAluno.value,
+      sobrenomeAluno: e.target.sobrenomeAluno.value,
+      tipoPaciente: e.target.tipoPaciente.value,
+      dataExpedicao: e.target.dataExpedicao.value,
+      nomePaciente: e.target.nomePaciente.value,
+      clinica: e.target.clinica.value,
+      periodo: e.target.periodo.value,
+    };
+
+    axios
+      .post("http://localhost:3000/forms/create", dados)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error) {
+          console.log(error.response.data.message);
+          setErro(error.response.data.message);
+          // alert("A data precisa ser maior que a data atual");
+          setTimeout(() => {
+            setErro("");
+          }, 3000);
+        }
+      });
+  };
+
   return (
     <>
       <div className="p-[20px] md:w-[800px] w-[100%] m-auto">
-        <form action="">
+        <form action="" onSubmit={cadastrar}>
           <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center ">
             <img src={Logo} alt="" className="h-[70px]" />
             <img src={Fasipe} alt="" className="h-[60px]" />
@@ -20,7 +54,9 @@ export default function Forms() {
             <span className="text-[28px] font-bold">Nome</span>
             <input
               type="text"
+              name="nomeAluno"
               placeholder="Digite seu Nome..."
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -29,7 +65,9 @@ export default function Forms() {
             <span className="text-[28px] font-bold">Sobrenome</span>
             <input
               type="text"
+              name="sobrenomeAluno"
               placeholder="Seu Sobrenome..."
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -37,8 +75,10 @@ export default function Forms() {
             <br />
             <span className="text-[28px] font-bold">RA</span>
             <input
-              type="Number"
+              type="text"
+              name="ra"
               placeholder="Seu RA..."
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -55,6 +95,8 @@ export default function Forms() {
             <span className="text-[28px] font-bold">Nome Completo</span>
             <input
               type="text"
+              name="nomePaciente"
+              required
               placeholder="Digite o nome do Paciente..."
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -63,47 +105,57 @@ export default function Forms() {
             <br />
             <span className="text-[28px] font-bold">Clínica</span>
             <select
-              name=""
+              name="clinica"
               id=""
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
-              <option value="">Clínica 1</option>
-              <option value="">Clínica 2</option>
-              <option value="">Clínica 3</option>
+              <option value="Clinica 1">Clínica 1</option>
+              <option value="Clinica 2">Clínica 2</option>
+              <option value="Clinica 3">Clínica 3</option>
             </select>
             <br />
             <br />
             <br />
             <span className="text-[28px] font-bold">Tipo Paciente</span>
             <select
-              name=""
+              name="tipoPaciente"
               id=""
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
-              <option value="">Pediatria</option>
-              <option value="">Adulto</option>
-              <option value="">Geriatria</option>
+              <option value="Pediatria">Pediatria</option>
+              <option value="Adulto">Adulto</option>
+              <option value="Geriatria">Geriatria</option>
             </select>
             <br />
             <br />
             <br />
             <span className="text-[28px] font-bold">Período</span>
             <select
-              name=""
+              name="periodo"
               id=""
+              required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
-              <option value="">Matutino</option>
-              <option value="">Noturno</option>
+              <option value="Matutino">Matutino</option>
+              <option value="Noturno">Noturno</option>
             </select>
             <br />
             <br />
             <br />
-            <span className="text-[28px] font-bold">Período</span>
-            <input type="date" name="" id="" className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]" />
+            <span className="text-[28px] font-bold">Data</span>
+            <input
+              type="date"
+              name="dataExpedicao"
+              id=""
+              required
+              className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
+            />
+            <p className="text-red-500 text-[20px]">{erro}</p>
             <br />
             <br />
             <br />
