@@ -1,7 +1,6 @@
 import pdfMake, { tableLayouts } from "pdfmake/build/pdfmake";
 
 import pdfFonts from "pdfmake/build/vfs_fonts";
-
 function pacientePDf(pacientes) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
 

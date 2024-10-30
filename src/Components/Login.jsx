@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import Logo from "../assets/Images/Logo.png";
 import { Link, Form, useNavigate } from "react-router-dom";
-
+import url from "./url";
 import axios from "axios";
 export default function Login() {
   const [usuarioInvalido, setUsuarioInvalido] = useState(false);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  //   const [chave, setChave] = useState();
   const formSubmit = (e) => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:3000/auth/login", {
+      .post(`${url}/auth/login`, {
         nomeUsuario: e.target.usuario.value,
         senha: e.target.senha.value,
       })
       .then((response) => {
         console.log(response);
         localStorage.setItem("token", response.data.token);
-        // window.location.href = "http://localhost:5173/deshboard";
         console.log(response.data.token);
         navigate("/deshboard");
+        // setChave(response.data.token);
       })
       .catch((error) => {
         console.log(error);
@@ -50,7 +51,6 @@ export default function Login() {
               className="w-[100%] m-auto mt-[5px] border-[1px] border-[#000] p-[7px] rounded-[8px]"
             />
             <div className="relative w-[100%] ">
-              
               <button className="absolute right-0 w-[120px] m-auto mt-[15px] border-[1px] bg-[#31A358] text-[#fff] p-[5px] rounded-[8px]">
                 Entrar
               </button>

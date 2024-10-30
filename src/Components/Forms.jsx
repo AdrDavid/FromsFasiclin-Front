@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import axios from "axios";
+import url from "./url";
 export default function Forms() {
   const [erro, setErro] = useState("");
 
@@ -19,7 +20,7 @@ export default function Forms() {
     };
 
     axios
-      .post("http://localhost:3000/forms/create", dados)
+      .post(`${url}/forms/create`, dados)
       .then((response) => {
         console.log(response);
       })
@@ -57,7 +58,7 @@ export default function Forms() {
               name="nomeAluno"
               placeholder="Digite seu Nome..."
               required
-              className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
+              className="rounded-[8px] p-[10px] text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
             <br />

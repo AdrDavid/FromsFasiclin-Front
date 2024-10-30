@@ -6,9 +6,13 @@ import axios from "axios";
 import pacientesPdf from "./relatorio";
 import { format, parseISO } from "date-fns";
 import { FaRegFilePdf } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import url from "./url";
+import api from "./Api";
+import { useAuth } from "../Hooks/AuthContext/AuthContext";
 export default function Desh() {
   const [pacientes, setPacientes] = useState([]);
-
+  //   console.log(url);
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
@@ -35,17 +39,48 @@ export default function Desh() {
     const { name, value } = event.target;
     setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
   };
+  console.log("TESTE " + localStorage.getItem("token"));
 
   useEffect(() => {
-    axios.get("http://localhost:3000/forms").then((response) => {
-      const dataEntrada = response.data.map((paciente) => ({
-        ...paciente,
-        dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
-      }));
+    // axios
+    //   .get(`${url}/forms`, {
+    //     headers: {
+    //       Authorization: `${localStorage.getItem("token")}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     const dataEntrada = response.data.map((paciente) => ({
+    //       ...paciente,
+    //       dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
+    //     }));
 
-      setPacientes(dataEntrada);
-    });
+    //     setPacientes(dataEntrada);
+    //   });
+
+    api
+      .get("/forms", {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((response) => {
+        const dataEntrada = response.data.map((paciente) => ({
+          ...paciente,
+          dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
+        }));
+
+        setPacientes(dataEntrada);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigate("/login");
+        } else {
+          console.log("ERRO AO BUSCAR PACIENTES " + error);
+        }
+      });
   }, []);
+
+  const navigate = useNavigate();
 
   function filtro(pacientes) {
     return pacientes.filter((paciente) => {
@@ -78,19 +113,22 @@ export default function Desh() {
         <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
           <img src={Logo} alt="" className="h-[70px]" />
           <img src={Fasipe} alt="" className="h-[60px]" />
-          <div className="w-[120px] min-h-[20px] bg-[#868686] absolute right-[0px] "  >
-            
+          <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
+            <p className="text-[#292929] text-[20px]">Usuario</p>
+            <button className="text-[#6e6e6e] text-[16px] absolute right-[0px]">
+              Logout
+            </button>
           </div>
         </div>
         <br />
-        <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]  ">
+        <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]">
           <div className="w-[100%] flex flex-wrap  gap-[10px]">
             <select
               onChange={handleFiltrar}
               name="clinica"
               value={filtrar.clinica}
               id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
             >
               <option value="">Clinica</option>
               <option value="Clinica 1">Clinica I</option>
@@ -102,7 +140,7 @@ export default function Desh() {
               name="tipoPaciente"
               value={filtrar.tipoPaciente}
               id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
             >
               <option value="">Atendimento</option>
               <option value="Pediatria">Pediatria</option>
@@ -114,7 +152,7 @@ export default function Desh() {
               name="periodo"
               value={filtrar.periodo}
               id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
             >
               <option value="">Período</option>
               <option value="Matutino">Matutino</option>
@@ -126,7 +164,7 @@ export default function Desh() {
               value={filtrar.nomeAluno}
               type="text"
               placeholder="Aluno"
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] cursor-pointer "
             />
             <input
               onChange={handleFiltrar}
@@ -134,14 +172,14 @@ export default function Desh() {
               value={filtrar.nomePaciente}
               type="text"
               placeholder="Paciente"
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] cursor-pointer "
             />
             <input
               onChange={handleFiltrar}
               name="dataExpedicao"
               value={filtrar.dataExpedicao}
               type="date"
-              className="shrink rounded-[8px] w-[150px] pl-[5px]  text-[17px] h-[40px] border-[1px] border-[#000000]"
+              className="shrink rounded-[8px] w-[150px] pl-[5px]  text-[17px] h-[40px] border-[1px] cursor-pointer "
             />
 
             <button
@@ -163,7 +201,7 @@ export default function Desh() {
           <div className="content min-h-[100px]">
             <table className="table-auto w-[100%]  ">
               <thead>
-                <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#8afab1] ">
+                <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#555555] ">
                   <th className="">Clínica</th>
                   <th className="">Atendimento</th>
                   <th className="">Paciente</th>
@@ -179,7 +217,7 @@ export default function Desh() {
                     {/* <tr className="h-2" /> */}
                     <tr
                       className={`${
-                        pacientes.indexOf(paciente) % 2 === 0
+                        filtro(pacientes).indexOf(paciente) % 2 === 0
                           ? "bg-[#8afab1]"
                           : ""
                       }`}
