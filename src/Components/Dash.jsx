@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
-import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import pacientesPdf from "./relatorio";
 import { format, parseISO } from "date-fns";

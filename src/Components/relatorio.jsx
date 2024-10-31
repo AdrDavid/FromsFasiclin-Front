@@ -1,9 +1,8 @@
-import pdfMake, { tableLayouts } from "pdfmake/build/pdfmake";
+import pdfMake from "pdfmake/build/pdfmake";
 
-import pdfFonts from "pdfmake/build/vfs_fonts";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
 function pacientePDf(pacientes) {
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
   const reportTitle = [
     {
       text: "Relatório de Pacientes",
@@ -70,10 +69,8 @@ function pacientePDf(pacientes) {
           ...dados,
         ],
       },
-      
-      layout: {
-        
 
+      layout: {
         fillColor: function (rowIndex, node, columnIndex) {
           if (rowIndex === 0) return "#ffffff";
           return (rowIndex - 1) % 2 === 0 ? "#8afab1" : "#ffffff";
@@ -82,10 +79,8 @@ function pacientePDf(pacientes) {
           return i === 1 ? 2 : 0;
         },
         vLineWidth: function () {
-          return 0; 
+          return 0;
         },
-
-       
       },
     },
   ];
@@ -109,7 +104,6 @@ function pacientePDf(pacientes) {
     footer: Rodape,
   };
 
- 
   pdfMake.createPdf(docDefinition).open();
 }
 

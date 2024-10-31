@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Logo from "../assets/Images/Logo.png";
-import { Link, Form, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import url from "./url";
 import axios from "axios";
 export default function Login() {
   const [usuarioInvalido, setUsuarioInvalido] = useState(false);
   const navigate = useNavigate();
-  
+
   const formSubmit = (e) => {
     e.preventDefault();
 
@@ -16,16 +16,12 @@ export default function Login() {
         senha: e.target.senha.value,
       })
       .then((response) => {
-       
         localStorage.setItem("token", response.data.token);
-        
-        navigate("/deshboard");
-        
+
+        navigate("/dashboard");
       })
       .catch((error) => {
-        
         if (error) {
-          
           setUsuarioInvalido(error.response.data.message);
         }
       });
@@ -44,7 +40,7 @@ export default function Login() {
               type="text"
               className="w-[100%] m-auto mt-[5px] mb-[15px] border-[1px] border-[#000] p-[7px] rounded-[8px]"
             />
-            <span className="mt-[30px]">Usuario</span>
+            <span className="mt-[30px]">Senha</span>
             <input
               type="password"
               name="senha"
@@ -59,8 +55,6 @@ export default function Login() {
           </form>
         </div>
       </div>
-
-      
     </>
   );
 }

@@ -5,8 +5,34 @@ import axios from "axios";
 import url from "./url";
 export default function Forms() {
   const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+  const [valor, setValor] = useState({
+    periodo: "",
+    nomeAluno: "",
+    sobrenomeAluno: "",
+    tipoPaciente: "",
+    dataExpedicao: "",
+    nomePaciente: "",
+    clinica: "",
+  });
 
+  const cadastro = (e) => {
+    setValor(e.target.value);
+  };
+  const limpar = () => {
+    setValor({
+      periodo: "",
+      nomeAluno: "",
+      sobrenomeAluno: "",
+      tipoPaciente: "",
+      dataExpedicao: "",
+      nomePaciente: "",
+      clinica: "",
+    });
+  };
   const cadastrar = (e) => {
+    setLoading(true);
     e.preventDefault();
     const dados = {
       RA: e.target.ra.value,
@@ -22,17 +48,18 @@ export default function Forms() {
     axios
       .post(`${url}/forms/create`, dados)
       .then((response) => {
-        
+        limpar();
+        setLoading(false);
+        setSucesso(true);
+        setTimeout(() => {
+          setSucesso(false);
+        }, 3000);
       })
       .catch((error) => {
-       
-        
-          
-          setErro(error.response.data.message);
-          setTimeout(() => {
-            setErro("");
-          }, 3000);
-       
+        setErro(error.response.data.message);
+        setTimeout(() => {
+          setErro("");
+        }, 3000);
       });
   };
 
@@ -57,6 +84,8 @@ export default function Forms() {
               name="nomeAluno"
               placeholder="Digite seu Nome..."
               required
+              value={valor.periodo}
+              onChange={cadastro}
               className="rounded-[8px] p-[10px] text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -68,6 +97,8 @@ export default function Forms() {
               name="sobrenomeAluno"
               placeholder="Seu Sobrenome..."
               required
+              value={valor.periodo}
+              onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -79,6 +110,8 @@ export default function Forms() {
               name="ra"
               placeholder="Seu RA..."
               required
+              value={valor.periodo}
+              onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
             <br />
@@ -97,6 +130,8 @@ export default function Forms() {
               type="text"
               name="nomePaciente"
               required
+              value={valor.periodo}
+              onChange={cadastro}
               placeholder="Digite o nome do Paciente..."
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -108,6 +143,8 @@ export default function Forms() {
               name="clinica"
               id=""
               required
+              value={valor.periodo}
+              onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
@@ -122,6 +159,8 @@ export default function Forms() {
             <select
               name="tipoPaciente"
               id=""
+              value={valor.periodo}
+              onChange={cadastro}
               required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
@@ -138,6 +177,8 @@ export default function Forms() {
               name="periodo"
               id=""
               required
+              value={valor.periodo}
+              onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
@@ -152,6 +193,8 @@ export default function Forms() {
               type="date"
               name="dataExpedicao"
               id=""
+              value={valor.periodo}
+              onChange={cadastro}
               required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -161,8 +204,13 @@ export default function Forms() {
             <br />
           </div>
           <br />
-          <button className="h-[60px] w-[100%] m-auto bg-[#006cc3] text-[28px] text-[#ffffff] rounded-[8px] ">
-            Enviar
+          {/* <p className="text-[#4ed649] text-[20px]">{sucesso}</p> */}
+          <button className="h-[60px] w-[100%] m-auto bg-[#006cc3] text-[28px] text-[#ffffff] rounded-[8px]  ">
+            {loading
+              ? "Carregando..."
+              : sucesso
+              ? "Agendado com sucesso"
+              : "Cadastrar"}
           </button>
           <br />
           <br />
