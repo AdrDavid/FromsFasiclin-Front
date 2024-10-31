@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import Deash from "./Components/Deash.jsx";
+import Dash from "./Components/Dash.jsx";
 import Forms from "./Components/Forms.jsx";
 import Login from "./Components/Login.jsx";
 import PrivateRoute from "./Components/PrivateRoute.jsx";
@@ -26,10 +26,10 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: "/deashboard",
+        path: "/dashboard",
         element: (
           <PrivateRoute>
-            <Deash />
+            <Dash />
           </PrivateRoute>
         ),
       },

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./App.css";
+
 import Froms from "./Components/Forms";
-import Desh from "./Components/Deash";
+import Desh from "./Components/Dash";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Login from "./Components/Login";
