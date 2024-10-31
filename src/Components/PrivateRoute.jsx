@@ -38,7 +38,7 @@ const PrivateRoute = ({ children }) => {
   }, []);
 
   if (isAuthenticated === null) {
-    // Pode adicionar um componente de loading aqui
+    
 
     return (
       <div className="w-[100%] h-[100vh] bg-[#e2e2e2]">

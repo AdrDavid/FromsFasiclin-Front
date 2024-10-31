@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import url from "./url";
 export default function Desh() {
   const [pacientes, setPacientes] = useState([]);
-  //   console.log(url);
+  
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
@@ -37,7 +37,7 @@ export default function Desh() {
     const { name, value } = event.target;
     setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
   };
-  console.log("TESTE " + localStorage.getItem("token"));
+  
 
   useEffect(() => {
     axios
@@ -58,14 +58,7 @@ export default function Desh() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // const Logout = () => {
-    //     localStorage.removeItem('token');
-    //     setIsAuthenticated(false);
-    //     navigate('/Login');
-    // }
-  }),
-    [];
+
 
   const Logout = () => {
     localStorage.removeItem("token");
@@ -84,7 +77,7 @@ export default function Desh() {
         return texto.toLowerCase().includes(busxa.toLowerCase());
       };
       const condicoes = [
-        // Filtros exatos (precisam ser iguais)
+      
         filtrar.tipoPaciente === "" ||
           paciente.tipoPaciente === filtrar.tipoPaciente,
         filtrar.periodo === "" || paciente.periodo === filtrar.periodo,
@@ -92,7 +85,7 @@ export default function Desh() {
           paciente.dataExpedicao === filtrar.dataExpedicao,
         filtrar.clinica === "" || paciente.clinica === filtrar.clinica,
 
-        // Filtros parciais (basta conter o texto)
+        
         contemTexto(paciente.nomePaciente, filtrar.nomePaciente),
         contemTexto(paciente.nomeAluno, filtrar.nomeAluno),
         contemTexto(paciente.sobrenomeAluno, filtrar.sobrenomeAluno),

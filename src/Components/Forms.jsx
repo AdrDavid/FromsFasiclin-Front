@@ -22,18 +22,17 @@ export default function Forms() {
     axios
       .post(`${url}/forms/create`, dados)
       .then((response) => {
-        console.log(response);
+        
       })
       .catch((error) => {
-        console.log(error);
-        if (error) {
-          console.log(error.response.data.message);
+       
+        
+          
           setErro(error.response.data.message);
-          // alert("A data precisa ser maior que a data atual");
           setTimeout(() => {
             setErro("");
           }, 3000);
-        }
+       
       });
   };
 

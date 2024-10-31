@@ -70,11 +70,9 @@ function pacientePDf(pacientes) {
           ...dados,
         ],
       },
-      // layout: "lightHorizontalLines",
+      
       layout: {
-        // fillColor: function (rowIndex, node, columnIndex) {
-        //   return rowIndex % 2 === 0 ? "#afafaf" : null;
-        // },
+        
 
         fillColor: function (rowIndex, node, columnIndex) {
           if (rowIndex === 0) return "#ffffff";
@@ -84,12 +82,10 @@ function pacientePDf(pacientes) {
           return i === 1 ? 2 : 0;
         },
         vLineWidth: function () {
-          return 0; // oculta as linhas verticais para manter o layout leve
+          return 0; 
         },
 
-        // hLineColor: function(i, node){
-        //     return i === 1? "#81bd5f" : "#afafaf";
-        // }
+       
       },
     },
   ];
@@ -113,7 +109,7 @@ function pacientePDf(pacientes) {
     footer: Rodape,
   };
 
-  //   pdfMake.createPdf(docDefinition).download();
+ 
   pdfMake.createPdf(docDefinition).open();
 }
 

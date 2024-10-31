@@ -4,7 +4,7 @@ import Froms from "./Components/Forms";
 import Desh from "./Components/Desh";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Login from "./Components/Login"; // Certifique-se de que o caminho está correto
+import Login from "./Components/Login";
 
 function App() {
   return (

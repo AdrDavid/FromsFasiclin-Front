@@ -6,7 +6,7 @@ import axios from "axios";
 export default function Login() {
   const [usuarioInvalido, setUsuarioInvalido] = useState(false);
   const navigate = useNavigate();
-  //   const [chave, setChave] = useState();
+  
   const formSubmit = (e) => {
     e.preventDefault();
 
@@ -16,16 +16,16 @@ export default function Login() {
         senha: e.target.senha.value,
       })
       .then((response) => {
-        console.log(response);
+       
         localStorage.setItem("token", response.data.token);
-        console.log(response.data.token);
+        
         navigate("/deshboard");
-        // setChave(response.data.token);
+        
       })
       .catch((error) => {
-        console.log(error);
+        
         if (error) {
-          console.log(error.response.data.message);
+          
           setUsuarioInvalido(error.response.data.message);
         }
       });
