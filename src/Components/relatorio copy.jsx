@@ -1,17 +1,14 @@
-// import pdfMake from "pdfmake/build/pdfmake";
+import pdfMake from "pdfmake/build/pdfmake";
 
-async function pacientePDf(pacientes) {
-  const pdfMake = (await import("pdfmake/build/pdfmake.min")).default;
-
-  const pdfFonts = (await import("pdfmake/build/vfs_fonts")).default;
-
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// import * as pdfFonts from "pdfmake/build/vfs_fonts";
+function pacientePDf(pacientes) {
+  //   pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
   const reportTitle = [
     {
       text: "Relatório de Pacientes",
       alignment: "center",
-      bold: true,
+      //   bold: true,
       margin: [15, 20, 0, 45],
     },
   ];
@@ -43,31 +40,31 @@ async function pacientePDf(pacientes) {
               text: "Atendimento",
               style: "tableHeader",
               fontSize: 10,
-              bold: true,
+              //   bold: true,
             },
             {
               text: "Paciente",
               style: "tableHeader",
               fontSize: 10,
-              bold: true,
+              //   bold: true,
             },
             {
               text: "Aluno",
               style: "tableHeader",
               fontSize: 10,
-              bold: true,
+              //   bold: true,
             },
             {
               text: "Periodo",
               style: "tableHeader",
               fontSize: 10,
-              bold: true,
+              //   bold: true,
             },
             {
               text: "Data",
               style: "tableHeader",
               fontSize: 10,
-              bold: true,
+              //   bold: true,
             },
           ],
           ...dados,
@@ -94,11 +91,20 @@ async function pacientePDf(pacientes) {
       {
         text: currentPage + "/" + pageCount,
         alignment: "right",
-        bold: true,
+        // bold: true,
         margin: [15, 20, 0, 45],
       },
     ];
   }
+
+  const fonts = {
+    Helvetica: {
+      normal: "Helvetica",
+      italics: "Helvetica-Oblique",
+    },
+  };
+
+  pdfMake.fonts = fonts;
 
   const docDefinition = {
     pageSize: "A4",
@@ -106,6 +112,9 @@ async function pacientePDf(pacientes) {
     header: [reportTitle],
     content: [details],
     footer: Rodape,
+    defaultStyle: {
+      font: "Helvetica", // ou 'Times' ou 'Courier'
+    },
   };
 
   pdfMake.createPdf(docDefinition).open();
