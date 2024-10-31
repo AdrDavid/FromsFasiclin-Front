@@ -2,11 +2,15 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import Desh from "./Components/Desh.jsx";
+import Deash from "./Components/Deash.jsx";
 import Forms from "./Components/Forms.jsx";
 import Login from "./Components/Login.jsx";
 import PrivateRoute from "./Components/PrivateRoute.jsx";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 
 const router = createBrowserRouter([
   {
@@ -15,28 +19,24 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/login" replace />
+        element: <Navigate to="/login" replace />,
       },
       {
         path: "/login",
-        element: <Login />
+        element: <Login />,
       },
       {
-        path: "/deshboard",
+        path: "/deashboard",
         element: (
           <PrivateRoute>
-            <Desh />
+            <Deash />
           </PrivateRoute>
         ),
       },
       {
         path: "/forms",
-        element: (
-          
-            <Forms />
-          
-        ),
-      }
+        element: <Forms />,
+      },
     ],
   },
 ]);

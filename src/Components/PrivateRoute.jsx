@@ -18,17 +18,14 @@ const PrivateRoute = ({ children }) => {
       }
 
       try {
-        const response = await axios.get(`${url}/auth/validate`, {
+        await axios.get(`${url}/auth/validate`, {
           headers: {
             Authorization: `${token}`,
           },
         });
-       
-          
-          setIsAuthenticated(true);
-        
+
+        setIsAuthenticated(true);
       } catch (error) {
-        console.error("Erro na autenticação:", error);
         localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
@@ -38,8 +35,6 @@ const PrivateRoute = ({ children }) => {
   }, []);
 
   if (isAuthenticated === null) {
-    
-
     return (
       <div className="w-[100%] h-[100vh] bg-[#e2e2e2]">
         <div className="w-[100%] h-[100vh] flex justify-center flex-col items-center">

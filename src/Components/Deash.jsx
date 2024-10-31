@@ -7,10 +7,11 @@ import pacientesPdf from "./relatorio";
 import { format, parseISO } from "date-fns";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import Logout from "./Logout";
 import url from "./url";
 export default function Desh() {
   const [pacientes, setPacientes] = useState([]);
-  
+
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
@@ -37,7 +38,6 @@ export default function Desh() {
     const { name, value } = event.target;
     setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
   };
-  
 
   useEffect(() => {
     axios
@@ -58,18 +58,6 @@ export default function Desh() {
 
   const navigate = useNavigate();
 
-
-
-  const Logout = () => {
-    localStorage.removeItem("token");
-
-    localStorage.clear();
-
-    navigate("/login");
-
-    window.location.reload();
-  };
-
   function filtro(pacientes) {
     return pacientes.filter((paciente) => {
       const contemTexto = (texto, busxa) => {
@@ -77,7 +65,6 @@ export default function Desh() {
         return texto.toLowerCase().includes(busxa.toLowerCase());
       };
       const condicoes = [
-      
         filtrar.tipoPaciente === "" ||
           paciente.tipoPaciente === filtrar.tipoPaciente,
         filtrar.periodo === "" || paciente.periodo === filtrar.periodo,
@@ -85,7 +72,6 @@ export default function Desh() {
           paciente.dataExpedicao === filtrar.dataExpedicao,
         filtrar.clinica === "" || paciente.clinica === filtrar.clinica,
 
-        
         contemTexto(paciente.nomePaciente, filtrar.nomePaciente),
         contemTexto(paciente.nomeAluno, filtrar.nomeAluno),
         contemTexto(paciente.sobrenomeAluno, filtrar.sobrenomeAluno),
@@ -103,12 +89,7 @@ export default function Desh() {
           <img src={Fasipe} alt="" className="h-[60px]" />
           <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
             {/* <p className="text-[#292929] text-[20px]">Usuario</p> */}
-            <button
-              onClick={Logout}
-              className="text-[#6e6e6e] text-[16px] absolute right-[0px]"
-            >
-              Logout
-            </button>
+            <Logout />
           </div>
         </div>
         <br />
