@@ -5,8 +5,7 @@ import App from "./App.jsx";
 import Desh from "./Components/Desh.jsx";
 import Forms from "./Components/Forms.jsx";
 import Login from "./Components/Login.jsx";
-import PrivateRoute from "./Components/PrivateRoute.jsx";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
@@ -14,29 +13,16 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index: true,
-        element: <Navigate to="/login" replace />
-      },
-      {
-        path: "/login",
-        element: <Login />
-      },
-      {
         path: "/deshboard",
-        element: (
-          <PrivateRoute>
-            <Desh />
-          </PrivateRoute>
-        ),
+        element: <Desh />,
       },
       {
         path: "/forms",
-        element: (
-          
-            <Forms />
-          
-        ),
-      }
+        element: <Forms />,
+      },
+      {
+        path: "/login",
+        element: <Login />,}
     ],
   },
 ]);

@@ -8,8 +8,6 @@ import { format, parseISO } from "date-fns";
 import { FaRegFilePdf } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import url from "./url";
-import api from "./Api";
-import { useAuth } from "../Hooks/AuthContext/AuthContext";
 export default function Desh() {
   const [pacientes, setPacientes] = useState([]);
   //   console.log(url);
@@ -42,25 +40,10 @@ export default function Desh() {
   console.log("TESTE " + localStorage.getItem("token"));
 
   useEffect(() => {
-    // axios
-    //   .get(`${url}/forms`, {
-    //     headers: {
-    //       Authorization: `${localStorage.getItem("token")}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     const dataEntrada = response.data.map((paciente) => ({
-    //       ...paciente,
-    //       dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
-    //     }));
-
-    //     setPacientes(dataEntrada);
-    //   });
-
-    api
-      .get("/forms", {
+    axios
+      .get(`${url}/forms`, {
         headers: {
-          Authorization: token,
+          Authorization: `${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
@@ -70,17 +53,35 @@ export default function Desh() {
         }));
 
         setPacientes(dataEntrada);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          navigate("/login");
-        } else {
-          console.log("ERRO AO BUSCAR PACIENTES " + error);
-        }
       });
+
+    
   }, []);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // const Logout = () => {
+    //     localStorage.removeItem('token');
+    //     setIsAuthenticated(false);
+    //     navigate('/Login');
+      
+    // }
+  }),[]
+
+  const Logout = () => {
+    
+    localStorage.removeItem('token');
+    
+    
+    localStorage.clear(); 
+    
+    
+    navigate('/login');
+    
+    
+    window.location.reload();
+  }
 
   function filtro(pacientes) {
     return pacientes.filter((paciente) => {
@@ -115,7 +116,7 @@ export default function Desh() {
           <img src={Fasipe} alt="" className="h-[60px]" />
           <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
             <p className="text-[#292929] text-[20px]">Usuario</p>
-            <button className="text-[#6e6e6e] text-[16px] absolute right-[0px]">
+            <button onClick={Logout} className="text-[#6e6e6e] text-[16px] absolute right-[0px]">
               Logout
             </button>
           </div>
