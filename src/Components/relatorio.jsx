@@ -1,12 +1,14 @@
-// import pdfMake from "pdfmake/build/pdfmake";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
 
-async function pacientePDf(pacientes) {
-  const pdfMake = (await import("pdfmake/build/pdfmake.min")).default;
+// Inicializa o pdfMake com as fontes
+if (typeof window !== "undefined") {
+  pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts.pdfMake;
+}
 
-  const pdfFonts = (await import("pdfmake/build/vfs_fonts")).default;
+// Initialize the fonts
 
-  pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
+function pacientePDf(pacientes) {
   const reportTitle = [
     {
       text: "Relatório de Pacientes",

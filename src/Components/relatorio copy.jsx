@@ -1,8 +1,8 @@
 import pdfMake from "pdfmake/build/pdfmake";
 
-// import * as pdfFonts from "pdfmake/build/vfs_fonts";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
 function pacientePDf(pacientes) {
-  //   pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
   const reportTitle = [
     {
