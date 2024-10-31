@@ -54,8 +54,6 @@ export default function Desh() {
 
         setPacientes(dataEntrada);
       });
-
-    
   }, []);
 
   const navigate = useNavigate();
@@ -65,23 +63,19 @@ export default function Desh() {
     //     localStorage.removeItem('token');
     //     setIsAuthenticated(false);
     //     navigate('/Login');
-      
     // }
-  }),[]
+  }),
+    [];
 
   const Logout = () => {
-    
-    localStorage.removeItem('token');
-    
-    
-    localStorage.clear(); 
-    
-    
-    navigate('/login');
-    
-    
+    localStorage.removeItem("token");
+
+    localStorage.clear();
+
+    navigate("/login");
+
     window.location.reload();
-  }
+  };
 
   function filtro(pacientes) {
     return pacientes.filter((paciente) => {
@@ -115,8 +109,11 @@ export default function Desh() {
           <img src={Logo} alt="" className="h-[70px]" />
           <img src={Fasipe} alt="" className="h-[60px]" />
           <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
-            <p className="text-[#292929] text-[20px]">Usuario</p>
-            <button onClick={Logout} className="text-[#6e6e6e] text-[16px] absolute right-[0px]">
+            {/* <p className="text-[#292929] text-[20px]">Usuario</p> */}
+            <button
+              onClick={Logout}
+              className="text-[#6e6e6e] text-[16px] absolute right-[0px]"
+            >
               Logout
             </button>
           </div>
