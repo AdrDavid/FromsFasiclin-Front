@@ -3,10 +3,17 @@ import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import axios from "axios";
 import url from "./url";
+import { useNavigate } from "react-router-dom";
+import { set } from "date-fns";
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 export default function Forms() {
-  const [erro, setErro] = useState("");
+  const sucesso = () => toast.success("Agendado com Sucesso !");
+
+  const [erro, setErro] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sucesso, setSucesso] = useState(false);
+  // const [sucesso, setSucesso] = useState(false);
   const [valor, setValor] = useState({
     periodo: "",
     nomeAluno: "",
@@ -15,10 +22,15 @@ export default function Forms() {
     dataExpedicao: "",
     nomePaciente: "",
     clinica: "",
+    RA: "",
   });
 
   const cadastro = (e) => {
-    setValor(e.target.value);
+    const { name, value } = e.target;
+    setValor((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
   const limpar = () => {
     setValor({
@@ -29,13 +41,14 @@ export default function Forms() {
       dataExpedicao: "",
       nomePaciente: "",
       clinica: "",
+      RA: "",
     });
   };
   const cadastrar = (e) => {
     setLoading(true);
     e.preventDefault();
     const dados = {
-      RA: e.target.ra.value,
+      RA: e.target.RA.value,
       nomeAluno: e.target.nomeAluno.value,
       sobrenomeAluno: e.target.sobrenomeAluno.value,
       tipoPaciente: e.target.tipoPaciente.value,
@@ -50,21 +63,23 @@ export default function Forms() {
       .then((response) => {
         limpar();
         setLoading(false);
-        setSucesso(true);
+        sucesso();
+
         setTimeout(() => {
-          setSucesso(false);
+          setErro(false);
         }, 3000);
       })
       .catch((error) => {
         setErro(error.response.data.message);
         setTimeout(() => {
-          setErro("");
+          setLoading(false);
         }, 3000);
       });
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="p-[20px] md:w-[800px] w-[100%] m-auto">
         <form action="" onSubmit={cadastrar}>
           <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center ">
@@ -84,7 +99,7 @@ export default function Forms() {
               name="nomeAluno"
               placeholder="Digite seu Nome..."
               required
-              value={valor.periodo}
+              value={valor.nomeAluno}
               onChange={cadastro}
               className="rounded-[8px] p-[10px] text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -97,7 +112,7 @@ export default function Forms() {
               name="sobrenomeAluno"
               placeholder="Seu Sobrenome..."
               required
-              value={valor.periodo}
+              value={valor.sobrenomeAluno}
               onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -107,10 +122,10 @@ export default function Forms() {
             <span className="text-[28px] font-bold">RA</span>
             <input
               type="text"
-              name="ra"
+              name="RA"
               placeholder="Seu RA..."
               required
-              value={valor.periodo}
+              value={valor.RA}
               onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
@@ -130,7 +145,7 @@ export default function Forms() {
               type="text"
               name="nomePaciente"
               required
-              value={valor.periodo}
+              value={valor.nomePaciente}
               onChange={cadastro}
               placeholder="Digite o nome do Paciente..."
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
@@ -143,7 +158,7 @@ export default function Forms() {
               name="clinica"
               id=""
               required
-              value={valor.periodo}
+              value={valor.clinica}
               onChange={cadastro}
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
@@ -159,7 +174,7 @@ export default function Forms() {
             <select
               name="tipoPaciente"
               id=""
-              value={valor.periodo}
+              value={valor.tipoPaciente}
               onChange={cadastro}
               required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
@@ -193,12 +208,14 @@ export default function Forms() {
               type="date"
               name="dataExpedicao"
               id=""
-              value={valor.periodo}
+              value={valor.dataExpedicao}
               onChange={cadastro}
               required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
-            <p className="text-red-500 text-[20px]">{erro}</p>
+            <p className="text-red-500 text-[20px]">
+              {erro ? `A data precisa ser maior que o dia de hoje !` : ""}
+            </p>
             <br />
             <br />
             <br />
@@ -206,11 +223,7 @@ export default function Forms() {
           <br />
           {/* <p className="text-[#4ed649] text-[20px]">{sucesso}</p> */}
           <button className="h-[60px] w-[100%] m-auto bg-[#006cc3] text-[28px] text-[#ffffff] rounded-[8px]  ">
-            {loading
-              ? "Carregando..."
-              : sucesso
-              ? "Agendado com sucesso"
-              : "Cadastrar"}
+            {loading ? "Carregando..." : "Cadastrar"}
           </button>
           <br />
           <br />

@@ -2,20 +2,37 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import axios from "axios";
-import { format, parseISO } from "date-fns";
+import { format, min, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Logout from "./Logout";
 import url from "./url";
 import { FaRegFilePdf } from "react-icons/fa";
-import  geraPDF  from "./relatorio";
-
+import geraPDF from "./relatorio";
+import { data } from "autoprefixer";
+import { GrLinkNext } from "react-icons/gr";
+import { GrLinkPrevious } from "react-icons/gr";
 export default function Desh() {
+  let [minPg, setMinPg] = useState(0);
+  let [maxPg, setMaxPg] = useState(20);
+  const [desabled, setDisabled] = useState(false);
+  const [prevDisabled, setPrevDisabled] = useState(false);
   const [pacientes, setPacientes] = useState([]);
+
+  const dataAtual = new Date();
+  let diaAtual = dataAtual.getDate();
+  const mesAtual = dataAtual.getMonth() + 1;
+  const anoAtual = dataAtual.getFullYear();
+
+  if (diaAtual < 10) {
+    diaAtual = `0${diaAtual}`;
+  }
+  const dataDeHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
 
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
     dataExpedicao: "",
+    // dataExpedicao: dataDeHoje,
     nomePaciente: "",
     nomeAluno: "",
     sobrenomeAluno: "",
@@ -41,11 +58,15 @@ export default function Desh() {
 
   useEffect(() => {
     axios
-      .get(`${url}/forms`, {
-        headers: {
-          Authorization: `${localStorage.getItem("token")}`,
-        },
-      })
+      .get(
+        `${url}/forms`,
+
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((response) => {
         const dataEntrada = response.data.map((paciente) => ({
           ...paciente,
@@ -54,7 +75,7 @@ export default function Desh() {
 
         setPacientes(dataEntrada);
       });
-  }, []);
+  }, [minPg, maxPg]);
 
   const navigate = useNavigate();
 
@@ -80,6 +101,45 @@ export default function Desh() {
       return condicoes.every((condicao) => condicao);
     });
   }
+
+  console.log("pacientes " + filtro(pacientes).length);
+  let numeroTotal = filtro(pacientes).length;
+  const vinte = 20;
+  let numeroTotalPaginas = Math.ceil(numeroTotal / vinte);
+  const [page, setPage] = useState(1);
+  console.log(numeroTotalPaginas);
+
+  const handleNext = () => {
+    setMinPg(minPg + vinte);
+    setMaxPg(maxPg + vinte);
+    setPrevDisabled(false);
+    setPage(page + 1);
+    // if (filtro(pacientes).length <= maxPg + 5) {
+    //   console.log("acabou");
+    //   setDisabled(true);
+    // }
+
+    if (filtro(pacientes).length <= maxPg + vinte) {
+      console.log("acabou");
+      maxPg = filtro(pacientes).length;
+      setDisabled(true);
+    }
+  };
+
+  const handlePrev = () => {
+    if (minPg < 1) {
+      setMinPg(0);
+      setMaxPg(vinte);
+      setPrevDisabled(true);
+    } else {
+      setMinPg(minPg - vinte);
+      setMaxPg(maxPg - vinte);
+      setDisabled(false);
+      setPage(page - 1);
+    }
+
+    setDisabled(false);
+  };
 
   return (
     <>
@@ -184,31 +244,55 @@ export default function Desh() {
               </thead>
 
               <tbody className=" ">
-                {filtro(pacientes).map((paciente) => (
-                  <Fragment key={paciente.id}>
-                    {/* <tr className="h-2" /> */}
-                    <tr
-                      className={`${
-                        filtro(pacientes).indexOf(paciente) % 2 === 0
-                          ? "bg-[#8afab1]"
-                          : ""
-                      }`}
-                    >
-                      <td className="p-1 ">{paciente.clinica}</td>
-                      <td className="">{paciente.tipoPaciente}</td>
-                      <td className="">{paciente.nomePaciente}</td>
-                      <td className="">
-                        {paciente.nomeAluno} {paciente.sobrenomeAluno}
-                      </td>
-                      <td className="">{paciente.periodo}</td>
-                      <td className="  p-1 ">
-                        {format(parseISO(paciente.dataExpedicao), "dd-MM-yyyy")}
-                      </td>
-                    </tr>
-                  </Fragment>
-                ))}
+                {filtro(pacientes)
+                  .slice(minPg, maxPg)
+                  .map((paciente) => (
+                    <Fragment key={paciente.id}>
+                      {/* <tr className="h-2" /> */}
+                      <tr
+                        className={`${
+                          filtro(pacientes).indexOf(paciente) % 2 === 0
+                            ? "bg-[#8afab1]"
+                            : ""
+                        }`}
+                      >
+                        <td className="p-1 ">{paciente.clinica}</td>
+                        <td className="">{paciente.tipoPaciente}</td>
+                        <td className="">{paciente.nomePaciente}</td>
+                        <td className="">
+                          {paciente.nomeAluno} {paciente.sobrenomeAluno}
+                        </td>
+                        <td className="">{paciente.periodo}</td>
+                        <td className="  p-1 ">
+                          {format(
+                            parseISO(paciente.dataExpedicao),
+                            "dd-MM-yyyy"
+                          )}
+                        </td>
+                      </tr>
+                    </Fragment>
+                  ))}
               </tbody>
             </table>
+          </div>
+          <br />
+          <div className="flex justify-between ">
+            <button
+              disabled={prevDisabled}
+              className="text-[30px] "
+              onClick={handlePrev}
+            >
+              <GrLinkPrevious />
+            </button>
+
+            <p>{`${page} de ${numeroTotalPaginas}`}</p>
+            <button
+              disabled={desabled}
+              className="text-[30px] "
+              onClick={handleNext}
+            >
+              <GrLinkNext />
+            </button>
           </div>
           <br />
         </div>
