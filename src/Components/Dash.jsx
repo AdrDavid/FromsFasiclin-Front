@@ -2,12 +2,13 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import axios from "axios";
-import pacientesPdf from "./relatorio";
 import { format, parseISO } from "date-fns";
-import { FaRegFilePdf } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import Logout from "./Logout";
 import url from "./url";
+import { FaRegFilePdf } from "react-icons/fa";
+import  geraPDF  from "./relatorio";
+
 export default function Desh() {
   const [pacientes, setPacientes] = useState([]);
 
@@ -163,14 +164,14 @@ export default function Desh() {
           <br />
           <div className="flex justify-end">
             <button
-              onClick={() => pacientesPdf(filtro(pacientes))}
+              onClick={geraPDF}
               className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
             >
               <FaRegFilePdf />
             </button>
           </div>
           <div className="content min-h-[100px]">
-            <table className="table-auto w-[100%]  ">
+            <table className="table-auto w-[100%]  " id="relatorio">
               <thead>
                 <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#555555] ">
                   <th className="">Clínica</th>
