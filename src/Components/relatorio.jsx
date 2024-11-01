@@ -25,6 +25,7 @@ function geraPDF() {
     },
   });
   doc.save("relatorio.pdf");
+  doc.open("relatorio.pdf");
 }
 
 export default geraPDF;
