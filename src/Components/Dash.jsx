@@ -24,12 +24,13 @@ export default function Desh() {
   if (diaAtual < 10) {
     diaAtual = `0${diaAtual}`;
   }
-  const dataDeHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
+  let dataDeHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
 
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
     dataExpedicao: dataDeHoje,
+    nomePaciente: "",
     nomeAluno: "",
     sobrenomeAluno: "",
     clinica: "",
@@ -108,17 +109,13 @@ export default function Desh() {
   const handleNext = () => {
     setMinPg(minPg + vinte);
     setMaxPg(maxPg + vinte);
-    setPrevDisabled(false);
     setPage(page + 1);
   };
 
   const handlePrev = () => {
     setMinPg(minPg - vinte);
     setMaxPg(maxPg - vinte);
-    setDisabled(false);
     setPage(page - 1);
-
-    setDisabled(false);
   };
 
   return (
@@ -266,7 +263,7 @@ export default function Desh() {
 
             <p>{`${page} de ${numeroTotalPaginas}`}</p>
             <button
-              disabled={page === numeroTotalPaginas}
+              disabled={page === numeroTotalPaginas ? true : false}
               className="text-[30px] "
               onClick={handleNext}
             >
