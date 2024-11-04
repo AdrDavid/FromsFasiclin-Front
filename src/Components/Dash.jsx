@@ -103,6 +103,11 @@ export default function Desh() {
   let numeroTotal = filtro(pacientes).length;
   const vinte = 20;
   let numeroTotalPaginas = Math.ceil(numeroTotal / vinte);
+
+  if (numeroTotalPaginas === 0) {
+    numeroTotalPaginas = 1;
+  }
+
   const [page, setPage] = useState(1);
   console.log(numeroTotalPaginas);
 
