@@ -31,9 +31,7 @@ export default function Desh() {
   const [filtrar, setFiltrar] = useState({
     tipoPaciente: "",
     periodo: "",
-    dataExpedicao: "",
     dataExpedicao: dataDeHoje,
-    // nomePaciente: "",
     nomeAluno: "",
     sobrenomeAluno: "",
     clinica: "",
@@ -114,10 +112,6 @@ export default function Desh() {
     setMaxPg(maxPg + vinte);
     setPrevDisabled(false);
     setPage(page + 1);
-    // if (filtro(pacientes).length <= maxPg + 5) {
-    //   console.log("acabou");
-    //   setDisabled(true);
-    // }
 
     if (filtro(pacientes).length <= maxPg + vinte) {
       console.log("acabou");
