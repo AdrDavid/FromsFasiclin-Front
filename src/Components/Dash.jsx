@@ -14,8 +14,6 @@ import { GrLinkPrevious } from "react-icons/gr";
 export default function Desh() {
   let [minPg, setMinPg] = useState(0);
   let [maxPg, setMaxPg] = useState(20);
-  const [desabled, setDisabled] = useState(false);
-  const [prevDisabled, setPrevDisabled] = useState(false);
   const [pacientes, setPacientes] = useState([]);
 
   const dataAtual = new Date();
@@ -112,25 +110,13 @@ export default function Desh() {
     setMaxPg(maxPg + vinte);
     setPrevDisabled(false);
     setPage(page + 1);
-
-    if (filtro(pacientes).length <= maxPg + vinte) {
-      console.log("acabou");
-      maxPg = filtro(pacientes).length;
-      setDisabled(true);
-    }
   };
 
   const handlePrev = () => {
-    if (minPg < 1) {
-      setMinPg(0);
-      setMaxPg(vinte);
-      setPrevDisabled(true);
-    } else {
-      setMinPg(minPg - vinte);
-      setMaxPg(maxPg - vinte);
-      setDisabled(false);
-      setPage(page - 1);
-    }
+    setMinPg(minPg - vinte);
+    setMaxPg(maxPg - vinte);
+    setDisabled(false);
+    setPage(page - 1);
 
     setDisabled(false);
   };
@@ -242,7 +228,6 @@ export default function Desh() {
                   .slice(minPg, maxPg)
                   .map((paciente) => (
                     <Fragment key={paciente.id}>
-                      {/* <tr className="h-2" /> */}
                       <tr
                         className={`${
                           filtro(pacientes).indexOf(paciente) % 2 === 0
@@ -272,7 +257,7 @@ export default function Desh() {
           <br />
           <div className="flex justify-between ">
             <button
-              disabled={prevDisabled}
+              disabled={page === 1 ? true : false}
               className="text-[30px] "
               onClick={handlePrev}
             >
@@ -281,7 +266,7 @@ export default function Desh() {
 
             <p>{`${page} de ${numeroTotalPaginas}`}</p>
             <button
-              disabled={desabled}
+              disabled={page === numeroTotalPaginas}
               className="text-[30px] "
               onClick={handleNext}
             >
