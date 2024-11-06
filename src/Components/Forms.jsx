@@ -10,10 +10,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Forms() {
   const sucesso = () => toast.success("Agendado com Sucesso !");
-
-  const [erro, setErro] = useState(false);
-  const [loading, setLoading] = useState(false);
-  // const [sucesso, setSucesso] = useState(false);
+  console.log("teste");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState("");
   const [valor, setValor] = useState({
     periodo: "",
     nomeAluno: "",
@@ -62,6 +61,7 @@ export default function Forms() {
       .post(`${url}/forms/create`, dados)
       .then((response) => {
         limpar();
+        console.log("response", response);
         setLoading(false);
         sucesso();
 
@@ -70,7 +70,15 @@ export default function Forms() {
         }, 3000);
       })
       .catch((error) => {
-        setErro(error.response.data.message);
+        // setErro(error.response.data.message);
+        if (error.response.data.codigo === "DUPLICATED_FORMS") {
+          setErro(
+            `O Paciente ${valor.nomePaciente}  ja foi agendado para esta data!`
+          );
+        } else if (error.response.data.codigo === "INVALID_DATE") {
+          setErro(`A data precisa ser maior que a data atual!`);
+        }
+
         setTimeout(() => {
           setLoading(false);
         }, 3000);
@@ -213,15 +221,13 @@ export default function Forms() {
               required
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             />
-            <p className="text-red-500 text-[20px]">
-              {erro ? `A data precisa ser maior que o dia de hoje !` : ""}
-            </p>
+            <p className="text-red-500 text-[20px]">{erro}</p>
             <br />
             <br />
             <br />
           </div>
           <br />
-          {/* <p className="text-[#4ed649] text-[20px]">{sucesso}</p> */}
+
           <button className="h-[60px] w-[100%] m-auto bg-[#006cc3] text-[28px] text-[#ffffff] rounded-[8px]  ">
             {loading ? "Carregando..." : "Cadastrar"}
           </button>
