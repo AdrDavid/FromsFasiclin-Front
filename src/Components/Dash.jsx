@@ -8,11 +8,9 @@ import Logout from "./Logout";
 import url from "./url";
 import { FaRegFilePdf } from "react-icons/fa";
 import geraPDF from "./relatorio";
-import { data } from "autoprefixer";
 import { GrLinkNext } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+
 export default function Desh() {
   let [minPg, setMinPg] = useState(0);
   let [maxPg, setMaxPg] = useState(20);
@@ -123,43 +121,6 @@ export default function Desh() {
     setPage(page - 1);
   };
 
-  function geraPDF() {
-    const doc = new jsPDF();
-    const title = "Relatório de Pacientes";
-    // Calcula a largura do texto
-    const textWidth = doc.getTextWidth(title);
-    // Calcula a posição X para centralizar
-    const x = (doc.internal.pageSize.getWidth() - textWidth) / 2;
-    // Adiciona o texto centralizado
-
-    const dados = filtro(pacientes).map((pacientes) => [
-      pacientes.clinica,
-      pacientes.tipoPaciente,
-      pacientes.nomePaciente,
-      `${pacientes.nomeAluno} ${pacientes.sobrenomeAluno}`,
-      pacientes.periodo,
-      format(parseISO(pacientes.dataExpedicao), "dd/MM/yyyy"),
-    ]);
-
-    doc.text(title, x, 10);
-    doc.autoTable({
-      head: [
-        ["Clinica", "Tipo", "Paciente", "Aluno", "Periodo", "Data Expedicao"],
-      ],
-      body: dados,
-      headStyles: {
-        fillColor: [9, 128, 56],
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
-      },
-      theme: "striped",
-      styles: {
-        fontSize: 10,
-      },
-    });
-    doc.save("relatorio.pdf");
-  }
-
   return (
     <>
       <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
@@ -244,6 +205,7 @@ export default function Desh() {
           <div className="flex justify-end">
             <button
               onClick={() => {
+                console.log(filtro(pacientes));
                 geraPDF(filtro(pacientes));
               }}
               className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
@@ -276,14 +238,14 @@ export default function Desh() {
                             : ""
                         }`}
                       >
-                        <td className="p-1 ">{paciente.clinica}</td>
-                        <td className="">{paciente.tipoPaciente}</td>
+                        <td className="p-1 w-[100px] ">{paciente.clinica}</td>
+                        <td className=" w-[130px] ">{paciente.tipoPaciente}</td>
                         <td className="">{paciente.nomePaciente}</td>
                         <td className="">
                           {paciente.nomeAluno} {paciente.sobrenomeAluno}
                         </td>
-                        <td className="">{paciente.periodo}</td>
-                        <td className="  p-1 ">
+                        <td className="w-[100px] ">{paciente.periodo}</td>
+                        <td className=" p-1 w-[120px] ">
                           {format(
                             parseISO(paciente.dataExpedicao),
                             "dd-MM-yyyy"

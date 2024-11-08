@@ -1,26 +1,15 @@
-import React from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { format, min, parseISO } from "date-fns";
-import Desh from "./Dash";
-// import { format } from "date-fns";
-// function getTabela() {
-//   const tabela = filtro(pacientes).map((pacientes) => [
-//     pacientes.clinica,
-//     pacientes.tipoPaciente,
-//     pacientes.nomePaciente,
-//     `${pacientes.nomeAluno} ${pacientes.sobrenomeAluno}`,
-//     pacientes.periodo,
-//     pacientes.dataExpedicao,
-
-//     format(parseISO(pacientes.dataExpedicao), "dd/MM/yyyy"),
-//   ]);
-
-//   return tabela;
-// }
-
 function geraPDF(dados) {
-  const doc = new jsPDF();
+  console.log("AQUIIIIIIIII");
+  console.log(dados.length);
+  console.log(dados);
+
+  const doc = new jsPDF({
+    orientation: "p",
+    unit: "mm",
+    format: "a4",
+  });
   const title = "Relatório de Pacientes";
   // Calcula a largura do texto
   const textWidth = doc.getTextWidth(title);
@@ -28,20 +17,48 @@ function geraPDF(dados) {
   const x = (doc.internal.pageSize.getWidth() - textWidth) / 2;
   // Adiciona o texto centralizado
 
+  let rows = [];
+  for (let i = 0; i < dados.length; i++) {
+    console.log(dados[i].clinica);
+    const linha = [];
+    linha.push(dados[i].clinica);
+    linha.push(dados[i].tipoPaciente);
+    linha.push(dados[i].nomePaciente);
+    linha.push(dados[i].nomeAluno + " " + dados[i].sobrenomeAluno);
+    linha.push(dados[i].periodo);
+    linha.push(dados[i].dataExpedicao);
+    // return linha;
+    console.log("dados teste");
+    console.log(linha);
+
+    rows.push(linha);
+  }
+
   doc.text(title, x, 10);
   doc.autoTable({
     head: [
       ["Clinica", "Tipo", "Paciente", "Aluno", "Periodo", "Data Expedicao"],
     ],
-    body: dados,
+    body: rows,
+
     headStyles: {
       fillColor: [9, 128, 56],
       textColor: [255, 255, 255],
       fontStyle: "bold",
     },
+
     theme: "striped",
     styles: {
       fontSize: 10,
+      autoSize: true,
+    },
+    columnStyles: {
+      0: { cellWidth: 20 },
+      1: { cellWidth: 20 },
+      2: { cellWidth: 50 },
+      3: { cellWidth: 50 },
+      4: { cellWidth: 20 },
+      5: { cellWidth: 25 },
     },
   });
   doc.save("relatorio.pdf");
