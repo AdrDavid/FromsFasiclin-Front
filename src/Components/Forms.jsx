@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function Forms() {
   const sucesso = () => toast.success("Agendado com Sucesso !");
-  console.log("teste");
+
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState("");
   const [valor, setValor] = useState({
@@ -61,7 +61,7 @@ export default function Forms() {
       .post(`${url}/forms/create`, dados)
       .then((response) => {
         limpar();
-        console.log("response", response);
+
         setLoading(false);
         sucesso();
 

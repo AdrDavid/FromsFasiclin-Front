@@ -11,6 +11,8 @@ import geraPDF from "./relatorio";
 import { data } from "autoprefixer";
 import { GrLinkNext } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 export default function Desh() {
   let [minPg, setMinPg] = useState(0);
   let [maxPg, setMaxPg] = useState(20);
@@ -99,7 +101,6 @@ export default function Desh() {
     });
   }
 
-  console.log("pacientes " + filtro(pacientes).length);
   let numeroTotal = filtro(pacientes).length;
   const vinte = 20;
   let numeroTotalPaginas = Math.ceil(numeroTotal / vinte);
@@ -109,7 +110,6 @@ export default function Desh() {
   }
 
   const [page, setPage] = useState(1);
-  console.log(numeroTotalPaginas);
 
   const handleNext = () => {
     setMinPg(minPg + vinte);
@@ -122,6 +122,43 @@ export default function Desh() {
     setMaxPg(maxPg - vinte);
     setPage(page - 1);
   };
+
+  function geraPDF() {
+    const doc = new jsPDF();
+    const title = "Relatório de Pacientes";
+    // Calcula a largura do texto
+    const textWidth = doc.getTextWidth(title);
+    // Calcula a posição X para centralizar
+    const x = (doc.internal.pageSize.getWidth() - textWidth) / 2;
+    // Adiciona o texto centralizado
+
+    const dados = filtro(pacientes).map((pacientes) => [
+      pacientes.clinica,
+      pacientes.tipoPaciente,
+      pacientes.nomePaciente,
+      `${pacientes.nomeAluno} ${pacientes.sobrenomeAluno}`,
+      pacientes.periodo,
+      format(parseISO(pacientes.dataExpedicao), "dd/MM/yyyy"),
+    ]);
+
+    doc.text(title, x, 10);
+    doc.autoTable({
+      head: [
+        ["Clinica", "Tipo", "Paciente", "Aluno", "Periodo", "Data Expedicao"],
+      ],
+      body: dados,
+      headStyles: {
+        fillColor: [9, 128, 56],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      theme: "striped",
+      styles: {
+        fontSize: 10,
+      },
+    });
+    doc.save("relatorio.pdf");
+  }
 
   return (
     <>
@@ -206,7 +243,9 @@ export default function Desh() {
           <br />
           <div className="flex justify-end">
             <button
-              onClick={geraPDF}
+              onClick={() => {
+                geraPDF(filtro(pacientes));
+              }}
               className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
             >
               <FaRegFilePdf />
