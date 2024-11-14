@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Fasipe from "../assets/Images/Fasipe.png";
 import Logo from "../assets/Images/Logo.png";
 import axios from "axios";
@@ -8,12 +8,17 @@ import { set } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
-export default function Forms() {
-  const sucesso = () => toast.success("Agendado com Sucesso !");
 
+import { useQueryClient } from "@tanstack/react-query";
+export default function Forms() {
+  const queryClient = useQueryClient();
+
+  const sucesso = () => toast.success("Agendado com Sucesso !");
+  const [unidade, setUnidade] = useState();
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState("");
   const [valor, setValor] = useState({
+    unidade: "",
     periodo: "",
     nomeAluno: "",
     sobrenomeAluno: "",
@@ -24,15 +29,44 @@ export default function Forms() {
     RA: "",
   });
 
+  useEffect(() => {
+    axios
+      .get(`${url}/unidades`)
+      .then((response) => {
+      
+        setUnidade(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  // const cadastro = (e) => {
+  //   const { name, value } = e.target;
+  //   setValor((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
+
   const cadastro = (e) => {
     const { name, value } = e.target;
-    setValor((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name === "unidade") {
+      setValor((prevState) => ({
+        ...prevState,
+        unidade: value,
+        unidadeId: value.id,
+      }));
+    } else {
+      setValor((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
   const limpar = () => {
     setValor({
+      unidade: "",
       periodo: "",
       nomeAluno: "",
       sobrenomeAluno: "",
@@ -47,6 +81,7 @@ export default function Forms() {
     setLoading(true);
     e.preventDefault();
     const dados = {
+      unidadeId: +e.target.unidade.value,
       RA: e.target.RA.value,
       nomeAluno: e.target.nomeAluno.value,
       sobrenomeAluno: e.target.sobrenomeAluno.value,
@@ -65,6 +100,8 @@ export default function Forms() {
         setLoading(false);
         sucesso();
 
+        queryClient.invalidateQueries(["pacientes"]);
+
         setTimeout(() => {
           setErro(false);
         }, 3000);
@@ -78,7 +115,7 @@ export default function Forms() {
         } else if (error.response.data.codigo === "INVALID_DATE") {
           setErro(`A data precisa ser maior que a data atual!`);
         }
-
+        console.log(error);
         setTimeout(() => {
           setLoading(false);
         }, 3000);
@@ -99,6 +136,24 @@ export default function Forms() {
             <h1 className="text-[32px] font-bold text-center">
               Dados do Aluno
             </h1>
+            <br />
+            <br />
+            <span className="text-[28px] font-bold">Unidade</span>
+            <select
+              name="unidade"
+              required
+              value={valor.unidade}
+              onChange={cadastro}
+              className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
+            >
+              <option value="">Selecione</option>
+              {unidade?.map((unid) => (
+                <option key={unid.id} value={unid.id}>
+                  {unid.nomeUnidade}
+                </option>
+              ))}
+            </select>
+            <br />
             <br />
             <br />
             <span className="text-[28px] font-bold">Nome</span>

@@ -11,6 +11,12 @@ const PrivateRoute = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
+      const user = localStorage.getItem("userLevel");
+      console.log("token");
+      console.log(token);
+      console.log("level");
+      console.log(user);
+      // const user = localStorage.getItem("userLevel", response.data.cargo);
 
       if (!token) {
         setIsAuthenticated(false);
@@ -20,9 +26,11 @@ const PrivateRoute = ({ children }) => {
       try {
         await axios.get(`${url}/auth/validate`, {
           headers: {
-            Authorization: `${token}`,
+            Authorization: `${token} `,
           },
         });
+
+        // console.log(user);
 
         setIsAuthenticated(true);
       } catch (error) {

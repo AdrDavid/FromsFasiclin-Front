@@ -1,9 +1,5 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
-import { dadosUser } from "./dadosTeste";
-import { dadosUnidades } from "./dadosTeste";
-import ModalNovoUsuario from "./ModalNovoUsuario";
-import url from "../url";
-import axios from "axios";
+
 export default function Tables({
   setModal,
   unidade,
@@ -23,9 +19,7 @@ export default function Tables({
     e.preventDefault();
     setModalNovoUnidade(true);
   };
-  // console.log("TESTANDO");
-  // console.log(unidade);
-  // console.log(unidade?.nome);
+  
 
   return (
     <>

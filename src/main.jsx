@@ -6,7 +6,7 @@ import Dash from "./Components/Dash.jsx";
 import Forms from "./Components/Forms.jsx";
 import Login from "./Components/Login.jsx";
 import PrivateRoute from "./Components/PrivateRoute.jsx";
-import AdminPage from "./Components/Adm/AdminPage.jsx";
+// import AdminPage from "./Components/Adm/AdminPage.jsx";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -37,15 +37,6 @@ const router = createBrowserRouter([
       {
         path: "/forms",
         element: <Forms />,
-      },
-      {
-        path: "/adminpage",
-
-        element: (
-          <PrivateRoute>
-            <AdminPage />
-          </PrivateRoute>
-        ),
       },
     ],
   },

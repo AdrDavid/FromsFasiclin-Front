@@ -1,9 +1,7 @@
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 function geraPDF(dados) {
-  console.log("AQUIIIIIIIII");
-  console.log(dados.length);
-  console.log(dados);
+ 
 
   const doc = new jsPDF({
     orientation: "p",
@@ -19,7 +17,7 @@ function geraPDF(dados) {
 
   let rows = [];
   for (let i = 0; i < dados.length; i++) {
-    console.log(dados[i].clinica);
+    
     const linha = [];
     linha.push(dados[i].clinica);
     linha.push(dados[i].tipoPaciente);
@@ -27,9 +25,7 @@ function geraPDF(dados) {
     linha.push(dados[i].nomeAluno + " " + dados[i].sobrenomeAluno);
     linha.push(dados[i].periodo);
     linha.push(dados[i].dataExpedicao);
-    // return linha;
-    console.log("dados teste");
-    console.log(linha);
+   
 
     rows.push(linha);
   }

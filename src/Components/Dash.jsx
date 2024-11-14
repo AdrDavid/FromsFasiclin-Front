@@ -11,10 +11,23 @@ import geraPDF from "./relatorio";
 import { GrLinkNext } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
 
+import FiltroComponente from "./FiltroComponente";
+import TabelaFiltrada from "./TabelaFiltrada";
+import filtro from "./Filtro";
+
+import ModalNovoUsuario from "./ModalNovoUsuario";
+import ModalNovoUnidade from "./ModalNovoUnidade";
+import Tables from "./Tables";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 export default function Desh() {
   let [minPg, setMinPg] = useState(0);
   let [maxPg, setMaxPg] = useState(20);
-  const [pacientes, setPacientes] = useState([]);
+
+  const [userLevel, setUserLevel] = useState(
+    localStorage.getItem("userLevel") || "DASH"
+  );
 
   const dataAtual = new Date();
   let diaAtual = dataAtual.getDate();
@@ -53,9 +66,43 @@ export default function Desh() {
     setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
   };
 
+  //////////////////////////////////////////
+  const [modal, setModal] = useState(false);
+  const [modalNovoUnidade, setModalNovoUnidade] = useState(false);
+
+  const [user, setUser] = useState();
+  const [unidade, setUnidade] = useState();
+
+  const handleEditUser = (userId) => {
+    setLectedUserId(userId);
+    setModalEditarUsuarios(true);
+  };
+
   useEffect(() => {
+    axios.get(`${url}/unidades`).then((response) => {
+      setUnidade(response.data);
+      // setLoading(false);
+    });
+
     axios
-      .get(
+      .get(`${url}/usuarios/all`, {
+        headers: { Authorization: `${localStorage.getItem("token")}` },
+      })
+      .then((response) => {
+        setUser(response.data);
+      });
+  }, []);
+
+  /////////////////////////////////////////
+
+  //////////////////////////////////////////
+  console.log(localStorage.getItem("userLevel"));
+  const { data: pacientes = [] } = useQuery({
+    queryKey: ["pacientes"],
+    queryFn: async () => {
+      
+      
+      const response = await axios.get(
         `${url}/forms`,
 
         {
@@ -63,43 +110,46 @@ export default function Desh() {
             Authorization: `${localStorage.getItem("token")}`,
           },
         }
-      )
-      .then((response) => {
-        const dataEntrada = response.data.map((paciente) => ({
-          ...paciente,
-          dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
-        }));
+      );
 
-        setPacientes(dataEntrada);
-      });
-  }, [minPg, maxPg]);
+      return response.data
+        ? response.data.map((paciente) => ({
+            ...paciente,
+            dataExpedicao: format(
+              new Date(paciente.dataExpedicao),
+              "yyyy-MM-dd"
+            ),
+          }))
+        : [];
+    },
+  });
 
-  const navigate = useNavigate();
+  //////////////////////////////////
 
-  function filtro(pacientes) {
-    return pacientes.filter((paciente) => {
-      const contemTexto = (texto, busxa) => {
-        if (!texto || !busxa) return true;
-        return texto.toLowerCase().includes(busxa.toLowerCase());
-      };
-      const condicoes = [
-        filtrar.tipoPaciente === "" ||
-          paciente.tipoPaciente === filtrar.tipoPaciente,
-        filtrar.periodo === "" || paciente.periodo === filtrar.periodo,
-        filtrar.dataExpedicao === "" ||
-          paciente.dataExpedicao === filtrar.dataExpedicao,
-        filtrar.clinica === "" || paciente.clinica === filtrar.clinica,
+  // useEffect(() => {
+  //   axios
+  //     .get(
+  //       `${url}/forms`,
 
-        contemTexto(paciente.nomePaciente, filtrar.nomePaciente),
-        contemTexto(paciente.nomeAluno, filtrar.nomeAluno),
-        contemTexto(paciente.sobrenomeAluno, filtrar.sobrenomeAluno),
-      ];
+  //       {
+  //         headers: {
+  //           Authorization: `${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       const dataEntrada = response.data.map((paciente) => ({
+  //         ...paciente,
+  //         dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
+  //       }));
 
-      return condicoes.every((condicao) => condicao);
-    });
-  }
+  //       setPacientes(dataEntrada);
+  //     });
+  // }, []);
 
-  let numeroTotal = filtro(pacientes).length;
+  // const navigate = useNavigate();
+
+  let numeroTotal = filtro(pacientes, filtrar).length;
   const vinte = 20;
   let numeroTotalPaginas = Math.ceil(numeroTotal / vinte);
 
@@ -123,6 +173,22 @@ export default function Desh() {
 
   return (
     <>
+      {modalNovoUnidade && (
+        <ModalNovoUnidade
+          setModalNovoUnidade={setModalNovoUnidade}
+          unidade={unidade}
+          setUnidade={setUnidade}
+        />
+      )}
+
+      {modal && (
+        <ModalNovoUsuario
+          setModal={setModal}
+          unidade={unidade}
+          setUnidade={setUnidade}
+        />
+      )}
+
       <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
         <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
           <img src={Logo} alt="" className="h-[70px]" />
@@ -132,131 +198,50 @@ export default function Desh() {
             <Logout />
           </div>
         </div>
+
+        {userLevel === "ADMIN" ? (
+          <>
+            <br />
+            <Tables
+              setModal={setModal}
+              unidade={unidade}
+              setUnidade={setUnidade}
+              user={user}
+              setUser={setUser}
+              onEditUser={handleEditUser}
+              setModalNovoUnidade={setModalNovoUnidade}
+            ></Tables>
+          </>
+        ) : null}
+
         <br />
         <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]">
-          <div className="w-[100%] flex flex-wrap  gap-[10px]">
-            <select
-              onChange={handleFiltrar}
-              name="clinica"
-              value={filtrar.clinica}
-              id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
-            >
-              <option value="">Clinica</option>
-              <option value="Clinica 1">Clinica I</option>
-              <option value="Clinica 2">Clinica II</option>
-              <option value="Clinica 3">Clinica III</option>
-            </select>
-            <select
-              onChange={handleFiltrar}
-              name="tipoPaciente"
-              value={filtrar.tipoPaciente}
-              id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
-            >
-              <option value="">Atendimento</option>
-              <option value="Pediatria">Pediatria</option>
-              <option value="Adulto">Adulto</option>
-              <option value="Geriatria">Geriatria</option>
-            </select>
-            <select
-              onChange={handleFiltrar}
-              name="periodo"
-              value={filtrar.periodo}
-              id=""
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] bg-[#ffffff] cursor-pointer "
-            >
-              <option value="">Período</option>
-              <option value="Matutino">Matutino</option>
-              <option value="Noturno">Noturno</option>
-            </select>
-            <input
-              onChange={handleFiltrar}
-              name="nomeAluno"
-              value={filtrar.nomeAluno}
-              type="text"
-              placeholder="Aluno"
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] cursor-pointer "
-            />
-            <input
-              onChange={handleFiltrar}
-              name="nomePaciente"
-              value={filtrar.nomePaciente}
-              type="text"
-              placeholder="Paciente"
-              className="shrink rounded-[8px] w-[150px] pl-[10px]  text-[20px] h-[40px] border-[1px] cursor-pointer "
-            />
-            <input
-              onChange={handleFiltrar}
-              name="dataExpedicao"
-              value={filtrar.dataExpedicao}
-              type="date"
-              className="shrink rounded-[8px] w-[150px] pl-[5px]  text-[17px] h-[40px] border-[1px] cursor-pointer "
-            />
+          <FiltroComponente
+            filtrar={filtrar}
+            setFiltrar={setFiltrar}
+            handleFiltrar={handleFiltrar}
+            limpar={limpar}
+          />
 
-            <button
-              onClick={limpar}
-              className="100px rounded-[8px] w-[150px] bg-[#2376d4] text-[#ffffff]   text-[20px] h-[40px] border-[1px] border-[#ffffff]"
-            >
-              Limpar
-            </button>
-          </div>
           <br />
           <div className="flex justify-end">
             <button
               onClick={() => {
-                console.log(filtro(pacientes));
-                geraPDF(filtro(pacientes));
+                geraPDF(filtro(pacientes, filtrar));
               }}
               className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
             >
               <FaRegFilePdf />
             </button>
           </div>
-          <div className="content min-h-[100px]">
-            <table className="table-auto w-[100%]  " id="relatorio">
-              <thead>
-                <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#555555] ">
-                  <th className="">Clínica</th>
-                  <th className="">Atendimento</th>
-                  <th className="">Paciente</th>
-                  <th className="">Aluno</th>
-                  <th className="">Período</th>
-                  <th className="">Data</th>
-                </tr>
-              </thead>
 
-              <tbody className=" ">
-                {filtro(pacientes)
-                  .slice(minPg, maxPg)
-                  .map((paciente) => (
-                    <Fragment key={paciente.id}>
-                      <tr
-                        className={`${
-                          filtro(pacientes).indexOf(paciente) % 2 === 0
-                            ? "bg-[#8afab1]"
-                            : ""
-                        }`}
-                      >
-                        <td className="p-1 w-[100px] ">{paciente.clinica}</td>
-                        <td className=" w-[130px] ">{paciente.tipoPaciente}</td>
-                        <td className="">{paciente.nomePaciente}</td>
-                        <td className="">
-                          {paciente.nomeAluno} {paciente.sobrenomeAluno}
-                        </td>
-                        <td className="w-[100px] ">{paciente.periodo}</td>
-                        <td className=" p-1 w-[120px] ">
-                          {format(
-                            parseISO(paciente.dataExpedicao),
-                            "dd-MM-yyyy"
-                          )}
-                        </td>
-                      </tr>
-                    </Fragment>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+          <TabelaFiltrada
+            filtro={() => filtro(pacientes, filtrar)}
+            pacientes={pacientes}
+            minPg={minPg}
+            maxPg={maxPg}
+          />
+
           <br />
           <div className="flex justify-between ">
             <button
