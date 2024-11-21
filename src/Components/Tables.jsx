@@ -1,4 +1,8 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
+import Paginacao from "./Paginacao";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+
 
 export default function Tables({
   setModal,
@@ -9,7 +13,13 @@ export default function Tables({
   setModalEditarUsuarios,
   onEditUser,
   setModalNovoUnidade,
+  pageSizeTables,
+  setPageSizeTables,
+  filtro,
 }) {
+
+
+  
   const abrirModal = (e) => {
     e.preventDefault();
     setModal(true);
@@ -19,7 +29,6 @@ export default function Tables({
     e.preventDefault();
     setModalNovoUnidade(true);
   };
-  
 
   return (
     <>
@@ -35,21 +44,38 @@ export default function Tables({
             </thead>
 
             <tbody>
-              {user?.map((usuario) => (
-                <tr
-                  key={usuario.id}
-                  className={`${
-                    user.indexOf(usuario) % 2 === 0 ? "bg-[#8afab1]" : ""
-                  }`}
-                >
-                  <td className="pl-1">{usuario.nomeUsuario}</td>
-                  <td className="pl-1">{usuario.cargo}</td>
-                  <td className="pl-1">{usuario.unidade?.nomeUnidade}</td>
-                </tr>
-              ))}
+              {user
+                ?.slice(
+                  pageSizeTables.tableUsersMin,
+                  pageSizeTables.tableUsersMax
+                )
+                .map((usuario) => (
+                  <tr
+                    key={usuario.id}
+                    className={`${
+                      user.indexOf(usuario) % 2 === 0 ? "bg-[#8afab1]" : ""
+                    }`}
+                  >
+                    <td className="pl-1">{usuario.nomeUsuario}</td>
+                    <td className="pl-1">{usuario.cargo}</td>
+                    <td className="pl-1">{usuario.unidade?.nomeUnidade}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
-
+          <div className="absolute bottom-[50px] right-[0px] w-[100%] p-[20px] ">
+            <Paginacao
+              filtro={filtro}
+              pageSizeTables={pageSizeTables}
+              setPageSizeTables={setPageSizeTables}
+              user={user}
+              tableType={"Users"}
+              pagesize={10}
+              data={user}
+            />
+          </div>
+          <br />
+          <br />
           <div
             onClick={abrirModal}
             className=" min-h-[20px]   flex justify-end absolute bottom-[20px] right-[20px] "
@@ -67,18 +93,37 @@ export default function Tables({
               </tr>
             </thead>
             <tbody className="">
-              {unidade?.map((unid) => (
-                <tr
-                  key={unid.id}
-                  className={`${
-                    unidade.indexOf(unid) % 2 === 0 ? "bg-[#8afab1]" : ""
-                  }`}
-                >
-                  <td className="pl-1">{unid.nomeUnidade}</td>
-                </tr>
-              ))}
+              {unidade
+                ?.sort((a, b) => a.nomeUnidade.localeCompare(b.nomeUnidade)).slice(
+                  pageSizeTables.tableUnidadesMin,
+                  pageSizeTables.tableUnidadesMax
+                )
+                .map((unid) => (
+                  <tr
+                    key={unid.id}
+                    className={`${
+                      unidade.indexOf(unid) % 2 === 0 ? "bg-[#8afab1]" : ""
+                    }`}
+                  >
+                    <td className="pl-1">{unid.nomeUnidade}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
+
+          <div className="absolute bottom-[50px] right-[0px] w-[100%] p-[20px] ">
+            <Paginacao
+              filtro={filtro}
+              pageSizeTables={pageSizeTables}
+              setPageSizeTables={setPageSizeTables}
+              unidade={unidade}
+              tableType={"Unidades"}
+              pagesize={10}
+              data={unidade}
+            />
+          </div>
+          <br />
+          <br />
           <div className=" min-h-[20px]   flex justify-end absolute bottom-[20px] right-[20px] ">
             <button
               onClick={abrirModalNovoUnidade}

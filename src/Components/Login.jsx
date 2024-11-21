@@ -20,7 +20,7 @@ export default function Login() {
         console.log("Login response:", response.data);
         localStorage.setItem("token", response.data.token);
         console.log("cargo");
-        localStorage.setItem("userLevel", response.data.cargo);
+        localStorage.setItem("userLevel", response.data);
         navigate("/dashboard");
 
         console.log(response);

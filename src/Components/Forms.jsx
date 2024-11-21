@@ -33,7 +33,6 @@ export default function Forms() {
     axios
       .get(`${url}/unidades`)
       .then((response) => {
-      
         setUnidade(response.data);
       })
       .catch((error) => {
@@ -147,11 +146,13 @@ export default function Forms() {
               className="rounded-[8px] p-[10px]  text-[22px] w-[100%] sm:h-[60px] h-[80px] border-[1px] border-[#000000]"
             >
               <option value="">Selecione</option>
-              {unidade?.map((unid) => (
-                <option key={unid.id} value={unid.id}>
-                  {unid.nomeUnidade}
-                </option>
-              ))}
+              {unidade
+                ?.sort((a, b) => a.nomeUnidade.localeCompare(b.nomeUnidade))
+                .map((unid) => (
+                  <option key={unid.id} value={unid.id}>
+                    {unid.nomeUnidade}
+                  </option>
+                ))}
             </select>
             <br />
             <br />

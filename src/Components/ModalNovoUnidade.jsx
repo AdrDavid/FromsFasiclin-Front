@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect, Fragment } from "react";
 
 import url from "./url";
@@ -8,6 +7,7 @@ export default function ModalNovoUnidade({
   unidade,
   setUnidade,
 }) {
+  const [sucesso, setSucesso] = useState(false);
   const modalRef = useRef();
   const fecharModal = (e) => {
     e.preventDefault();
@@ -21,7 +21,6 @@ export default function ModalNovoUnidade({
 
   window.addEventListener("keyup", fecharModal);
 
- 
   const novoUsuario = (e) => {
     e.preventDefault();
     const dados = {
@@ -31,14 +30,12 @@ export default function ModalNovoUnidade({
       nomeUnidade: e.target.nome.value,
     };
 
-   
-
     axios
       .post(`${url}/unidades`, dados, {
         headers: { Authorization: `${localStorage.getItem("token")}` },
       })
       .then((response) => {
-      
+        setSucesso(true);
       })
       .catch((error) => {
         console.log(error);
@@ -64,10 +61,14 @@ export default function ModalNovoUnidade({
           <input
             name="nome"
             type="text"
+            placeholder="Nome da unidade"
             className="w-[100%] h-[32px] pl-1 pr-2 border-[1px] border-[#000000] rounded-[8px] "
           />
 
           <div className="flex justify-end mt-[20px] ">
+            <p className="text-[green]">
+              {sucesso ? "Usuario cadastrado com sucesso" : ""}
+            </p>
             <button className="bg-[#2376d4] text-[#fff] px-2 py-1">
               Cadastrar
             </button>

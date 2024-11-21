@@ -1,9 +1,16 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import { format, min, parseISO } from "date-fns";
-export default function TabelaFiltrada({ filtro, pacientes, minPg, maxPg }) {
+import Paginacao from "./Paginacao";
+export default function TabelaFiltrada({
+  filtro,
+  pacientes,
+  minPg,
+  pageSizeTables,
+  setPageSizeTables,
+}) {
   return (
     <>
-      <div className="content min-h-[100px]">
+      <div className="content min-h-[100px] relative">
         <table className="table-auto w-[100%]  " id="relatorio">
           <thead>
             <tr className="text-left text-[18px] text-[#555555] border-b-[2px] border-[#555555] ">
@@ -18,7 +25,10 @@ export default function TabelaFiltrada({ filtro, pacientes, minPg, maxPg }) {
 
           <tbody className=" ">
             {filtro(pacientes)
-              .slice(minPg, maxPg)
+              .slice(
+                pageSizeTables.tablePacientesMin,
+                pageSizeTables.tablePacientesMax
+              )
               .map((paciente) => (
                 <Fragment key={paciente.id}>
                   <tr
@@ -43,6 +53,15 @@ export default function TabelaFiltrada({ filtro, pacientes, minPg, maxPg }) {
               ))}
           </tbody>
         </table>
+
+        <Paginacao
+          // filtro={filtro}
+          data={filtro(pacientes)}
+          pacientes={pacientes}
+          tableType={"Pacientes"}
+          pageSizeTables={pageSizeTables}
+          setPageSizeTables={setPageSizeTables}
+        ></Paginacao>
       </div>
     </>
   );

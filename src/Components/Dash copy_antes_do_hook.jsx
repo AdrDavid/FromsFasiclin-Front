@@ -117,10 +117,82 @@ export default function Desh() {
   const [modal, setModal] = useState(false);
   const [modalNovoUnidade, setModalNovoUnidade] = useState(false);
 
+  // const [user, setUser] = useState();
+  // const [unidade, setUnidade] = useState();
+
   const handleEditUser = (userId) => {
     setLectedUserId(userId);
     setModalEditarUsuarios(true);
   };
+
+  // useEffect(() => {
+  //   axios.get(`${url}/unidades`).then((response) => {
+  //     setUnidade(response.data);
+  //     // setLoading(false);
+  //   });
+
+  //   axios
+  //     .get(`${url}/usuarios/all`, {
+  //       headers: { Authorization: `${localStorage.getItem("token")}` },
+  //     })
+  //     .then((response) => {
+  //       setUser(response.data);
+  //     });
+  // }, []);
+
+  // /////////////////////////////////////////
+
+  // //////////////////////////////////////////
+  // // console.log(localStorage.getItem("token"));
+  // const { data: pacientes = [] } = useQuery({
+  //   queryKey: ["pacientes"],
+  //   queryFn: async () => {
+  //     const response = await axios.get(
+  //       userLevel === "DASH" ? `${url}/forms` : `${url}/forms/all`,
+
+  //       {
+  //         headers: {
+  //           Authorization: `${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     );
+
+  //     return response.data
+  //       ? response.data.map((paciente) => ({
+  //           ...paciente,
+  //           dataExpedicao: format(
+  //             new Date(paciente.dataExpedicao),
+  //             "yyyy-MM-dd"
+  //           ),
+  //         }))
+  //       : [];
+  //   },
+  // });
+
+  //////////////////////////////////
+
+  // useEffect(() => {
+  //   axios
+  //     .get(
+  //       `${url}/forms`,
+
+  //       {
+  //         headers: {
+  //           Authorization: `${localStorage.getItem("token")}`,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       const dataEntrada = response.data.map((paciente) => ({
+  //         ...paciente,
+  //         dataExpedicao: format(new Date(paciente.dataExpedicao), "yyyy-MM-dd"),
+  //       }));
+
+  //       setPacientes(dataEntrada);
+  //     });
+  // }, []);
+
+  // const navigate = useNavigate();
 
   return (
     <>
@@ -192,6 +264,9 @@ export default function Desh() {
           <TabelaFiltrada
             filtro={() => filtro(pacientes, filtrar)}
             pacientes={pacientes}
+            // minPg={minPg}
+            // maxPg={maxPg}
+
             pageSizeTables={pageSizeTables}
             setPageSizeTables={setPageSizeTables}
           />

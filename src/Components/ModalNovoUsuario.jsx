@@ -2,7 +2,11 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 
 import url from "./url";
 import axios from "axios";
+import { set } from "date-fns";
+
 export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
+  const [sucesso, setSucesso] = useState(false);
+
   const modalRef = useRef();
   const fecharModal = (e) => {
     e.preventDefault();
@@ -16,7 +20,6 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
 
   window.addEventListener("keyup", fecharModal);
 
- 
   const novoUsuario = (e) => {
     e.preventDefault();
     const dados = {
@@ -28,14 +31,12 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
       unidadeId: +e.target.unidade.value,
     };
 
-   
-
     axios
       .post(`${url}/auth/create`, dados, {
         headers: { Authorization: `${localStorage.getItem("token")}` },
       })
       .then((response) => {
-       
+        setSucesso(true);
       })
       .catch((error) => {
         console.log(error);
@@ -61,12 +62,14 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
           <input
             name="nome"
             type="text"
+            placeholder="Usuario: "
             className="w-[100%] h-[32px] pl-1 pr-2 border-[1px] border-[#000000] rounded-[8px] "
           />
 
           <input
             name="senha"
             type="text"
+            placeholder="Senha: "
             className="w-[100%] h-[32px] pl-1 pr-2 border-[1px] border-[#000000] rounded-[8px] "
           />
 
@@ -81,7 +84,9 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
               </Fragment>
             ))}
           </select>
-
+          <p className="text-[green]">
+            {sucesso ? "Usuario cadastrado com sucesso" : ""}
+          </p>
           <div className="flex justify-end mt-[20px] ">
             <button className="bg-[#2376d4] text-[#fff] px-2 py-1">
               Cadastrar
