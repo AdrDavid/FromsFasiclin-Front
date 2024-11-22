@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import url from "./url";
 import axios from "axios";
 import { set } from "date-fns";
 
-export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
+export default function ModalNovoUsuario({ setModal, unidades}) {
   const [sucesso, setSucesso] = useState(false);
-
+  const queryClient = useQueryClient();
   const modalRef = useRef();
   const fecharModal = (e) => {
     e.preventDefault();
@@ -20,27 +20,28 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
 
   window.addEventListener("keyup", fecharModal);
 
+  const mutation = useMutation({
+    mutationFn: (usuario) => {
+      return axios.post(`${url}/auth/create`, usuario, {
+        headers: { Authorization: `${localStorage.getItem("token")}` },
+      });
+    },
+    onSuccess: () => {
+      setSucesso(true);
+
+      queryClient.invalidateQueries(["users"]);
+    },
+  });
+
   const novoUsuario = (e) => {
     e.preventDefault();
     const dados = {
-      // nomeUsuario: "davidiano",
-      // senha: "123456",
-      // unidadeId: 2
       nomeUsuario: e.target.nome.value,
       senha: e.target.senha.value,
       unidadeId: +e.target.unidade.value,
     };
 
-    axios
-      .post(`${url}/auth/create`, dados, {
-        headers: { Authorization: `${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setSucesso(true);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    mutation.mutate(dados);
   };
   return (
     <div
@@ -78,7 +79,7 @@ export default function ModalNovoUsuario({ setModal, unidade, setUnidade }) {
             className="w-[100%] h-[35px] pl-1 pr-2 border-[1px] border-[#000000] rounded-[8px] "
           >
             <option value="">Unidade</option>
-            {unidade.map((unid) => (
+            {unidades.map((unid) => (
               <Fragment key={unid.id}>
                 <option value={unid.id}>{unid.nomeUnidade}</option>
               </Fragment>

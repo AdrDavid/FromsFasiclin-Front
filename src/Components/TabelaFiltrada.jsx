@@ -4,7 +4,7 @@ import Paginacao from "./Paginacao";
 export default function TabelaFiltrada({
   filtro,
   pacientes,
-  minPg,
+ 
   pageSizeTables,
   setPageSizeTables,
 }) {

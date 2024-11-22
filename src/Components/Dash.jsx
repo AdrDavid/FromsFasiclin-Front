@@ -19,31 +19,17 @@ import ModalNovoUsuario from "./ModalNovoUsuario";
 import ModalNovoUnidade from "./ModalNovoUnidade";
 import Tables from "./Tables";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
 import {
-  useUnidades,
-  useUsuarios,
-  usePacientes,
-  useAuthValidation,
-} from "./AxiosHook";
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useQueries,
+} from "@tanstack/react-query";
 
 export default function Desh() {
   const [userLevel, setUserLevel] = useState(
     localStorage.getItem("userLevel") || "DASH"
   );
-
-  const { data: unidade } = useUnidades();
-  const { data: user } = useUsuarios();
-  const { data: authLevel } = useAuthValidation();
-  const { data: pacientes = [] } = usePacientes(userLevel);
-
-  useEffect(() => {
-    if (authLevel) {
-      setUserLevel(authLevel);
-      localStorage.setItem("userLevel", authLevel);
-    }
-  }, [authLevel]);
 
   const [pageSizeTables, setPageSizeTables] = useState({
     tablePacientesMax: 20,
@@ -113,39 +99,77 @@ export default function Desh() {
     setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
   };
 
+  // Requisicao unidade paciente e usuario
   //////////////////////////////////////////
   const [modal, setModal] = useState(false);
   const [modalNovoUnidade, setModalNovoUnidade] = useState(false);
 
-  const handleEditUser = (userId) => {
-    setLectedUserId(userId);
-    setModalEditarUsuarios(true);
-  };
+  const { data: unidades = [], refetch: refetchUnidades } = useQuery({
+    queryKey: ["unidades"],
+    queryFn: async () => {
+      const response = await axios.get(`${url}/unidades`);
+      return response.data;
+    },
+  });
+
+  const { data: users = [], refetch: refetchUsers } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const response = await axios.get(`${url}/usuarios/all`, {
+        headers: {
+          Authorization: `${localStorage.getItem("token")}`,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  const { data: pacientes = [], refetch: refetchPacientes } = useQuery({
+    queryKey: ["pacientes"],
+    queryFn: async () => {
+      const response = await axios.get(
+        userLevel === "DASH" ? `${url}/forms` : `${url}/forms/all`,
+
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      return response.data
+        ? response.data.map((paciente) => ({
+            ...paciente,
+            dataExpedicao: format(
+              new Date(paciente.dataExpedicao),
+              "yyyy-MM-dd"
+            ),
+          }))
+        : [];
+    },
+
+    refetchInterval: 300000,
+    refetchIntervalInBackground: true,
+  });
+
+  /////////////////////////////////////////////
 
   return (
     <>
       {modalNovoUnidade && (
         <ModalNovoUnidade
           setModalNovoUnidade={setModalNovoUnidade}
-          unidade={unidade}
-          // setUnidade={setUnidade}
+          unidades={unidades}
         />
       )}
 
-      {modal && (
-        <ModalNovoUsuario
-          setModal={setModal}
-          unidade={unidade}
-          // setUnidade={setUnidade}
-        />
-      )}
+      {modal && <ModalNovoUsuario setModal={setModal} unidades={unidades} />}
 
       <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
         <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
           <img src={Logo} alt="" className="h-[70px]" />
           <img src={Fasipe} alt="" className="h-[60px]" />
           <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
-            {/* <p className="text-[#292929] text-[20px]">Usuario</p> */}
             <Logout />
           </div>
         </div>
@@ -155,11 +179,8 @@ export default function Desh() {
             <br />
             <Tables
               setModal={setModal}
-              unidade={unidade}
-              // setUnidade={setUnidade}
-              user={user}
-              // setUser={setUser}
-              onEditUser={handleEditUser}
+              unidades={unidades}
+              users={users}
               setModalNovoUnidade={setModalNovoUnidade}
               pageSizeTables={pageSizeTables}
               setPageSizeTables={setPageSizeTables}

@@ -2,9 +2,6 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 import { GrLinkNext } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
 export default function Paginacao({
-  filtro,
-  pacientes,
-  filtrar,
   pageSizeTables,
   setPageSizeTables,
   tableType,
@@ -13,10 +10,6 @@ export default function Paginacao({
 }) {
   let numeroTotal = data?.length || 1;
   let numeroTotalPaginas = Math.max(Math.ceil(numeroTotal / pagesize));
-
-  //   if (numeroTotalPaginas === 0) {
-  //     numeroTotalPaginas = 1;
-  //   }
 
   const getCurrentPage = () => {
     const minKey = `table${tableType}Min`;

@@ -26,10 +26,8 @@ const PrivateRoute = ({ children }) => {
           },
         });
 
-        // console.log(user);
         console.log("TESTANDO //////////////");
-        console.log(response.data)
-        // console.log(localStorage.setItem("userLevel"));
+        console.log(response.data);
 
         setIsAuthenticated(true);
       } catch (error) {

@@ -2,24 +2,15 @@ import React, { useRef, useState, useEffect, Fragment } from "react";
 import Paginacao from "./Paginacao";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-
-
 export default function Tables({
   setModal,
-  unidade,
-  setUnidade,
-  user,
-  setUser,
-  setModalEditarUsuarios,
-  onEditUser,
+  unidades,
+  users,
   setModalNovoUnidade,
   pageSizeTables,
   setPageSizeTables,
   filtro,
 }) {
-
-
-  
   const abrirModal = (e) => {
     e.preventDefault();
     setModal(true);
@@ -44,7 +35,7 @@ export default function Tables({
             </thead>
 
             <tbody>
-              {user
+              {users
                 ?.slice(
                   pageSizeTables.tableUsersMin,
                   pageSizeTables.tableUsersMax
@@ -53,7 +44,7 @@ export default function Tables({
                   <tr
                     key={usuario.id}
                     className={`${
-                      user.indexOf(usuario) % 2 === 0 ? "bg-[#8afab1]" : ""
+                      users.indexOf(usuario) % 2 === 0 ? "bg-[#8afab1]" : ""
                     }`}
                   >
                     <td className="pl-1">{usuario.nomeUsuario}</td>
@@ -68,10 +59,10 @@ export default function Tables({
               filtro={filtro}
               pageSizeTables={pageSizeTables}
               setPageSizeTables={setPageSizeTables}
-              user={user}
+              users={users}
               tableType={"Users"}
               pagesize={10}
-              data={user}
+              data={users}
             />
           </div>
           <br />
@@ -93,8 +84,9 @@ export default function Tables({
               </tr>
             </thead>
             <tbody className="">
-              {unidade
-                ?.sort((a, b) => a.nomeUnidade.localeCompare(b.nomeUnidade)).slice(
+              {unidades
+                ?.sort((a, b) => a.nomeUnidade.localeCompare(b.nomeUnidade))
+                .slice(
                   pageSizeTables.tableUnidadesMin,
                   pageSizeTables.tableUnidadesMax
                 )
@@ -102,7 +94,7 @@ export default function Tables({
                   <tr
                     key={unid.id}
                     className={`${
-                      unidade.indexOf(unid) % 2 === 0 ? "bg-[#8afab1]" : ""
+                      unidades.indexOf(unid) % 2 === 0 ? "bg-[#8afab1]" : ""
                     }`}
                   >
                     <td className="pl-1">{unid.nomeUnidade}</td>
@@ -116,10 +108,10 @@ export default function Tables({
               filtro={filtro}
               pageSizeTables={pageSizeTables}
               setPageSizeTables={setPageSizeTables}
-              unidade={unidade}
+              unidades={unidades}
               tableType={"Unidades"}
               pagesize={10}
-              data={unidade}
+              data={unidades}
             />
           </div>
           <br />

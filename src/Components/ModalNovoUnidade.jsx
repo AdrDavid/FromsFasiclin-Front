@@ -1,14 +1,14 @@
 import React, { useRef, useState, useEffect, Fragment } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import url from "./url";
 import axios from "axios";
 export default function ModalNovoUnidade({
   setModalNovoUnidade,
-  unidade,
-  setUnidade,
 }) {
   const [sucesso, setSucesso] = useState(false);
   const modalRef = useRef();
+  const queryClient = useQueryClient();
   const fecharModal = (e) => {
     e.preventDefault();
     if (
@@ -21,25 +21,35 @@ export default function ModalNovoUnidade({
 
   window.addEventListener("keyup", fecharModal);
 
-  const novoUsuario = (e) => {
+  const mutation = useMutation({
+    mutationFn: (unidade) => {
+
+
+      return axios.post(`${url}/unidades`, unidade, {
+        headers: { Authorization: `${localStorage.getItem("token")}` },
+      });
+      // return novoUnidade(unidade);
+    },
+    onSuccess: () => {
+      setSucesso(true);
+      // refetch();
+      queryClient.invalidateQueries(["unidades"]);
+      // setTimeout(() => {
+      //   setSucesso(false);
+      // }, 3000);
+    },
+  });
+
+  const novoUnidade = (e) => {
     e.preventDefault();
     const dados = {
       // nomeUsuario: "davidiano",
       // senha: "123456",
       // unidadeId: 2
       nomeUnidade: e.target.nome.value,
-    };
+    }
 
-    axios
-      .post(`${url}/unidades`, dados, {
-        headers: { Authorization: `${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        setSucesso(true);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    mutation.mutate(dados);
   };
   return (
     <div
@@ -54,7 +64,8 @@ export default function ModalNovoUnidade({
         <h1>Nova unidade</h1>
         <br />
         <form
-          onSubmit={novoUsuario}
+          onSubmit={novoUnidade}
+          // onSubmit={(e) => mutation.mutate(e.target)}
           action=""
           className="flex flex-col gap-[10px]"
         >

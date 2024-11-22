@@ -8,8 +8,8 @@ import { set } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useQueryClient } from "@tanstack/react-query";
 export default function Forms() {
   const queryClient = useQueryClient();
 
@@ -76,6 +76,41 @@ export default function Forms() {
       RA: "",
     });
   };
+
+  const mutation = useMutation({
+    mutationFn: (paciente) => {
+      return axios.post(`${url}/forms/create`, paciente, {
+        headers: { Authorization: `${localStorage.getItem("token")}` },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+      setTimeout(() => {
+        setErro(false);
+      }, 3000);
+
+      limpar();
+
+      setLoading(false);
+      sucesso();
+    },
+    onError: (error) => {
+      console.log(error);
+      // setErro(error.response.data.message);
+      if (error.response.data.codigo === "DUPLICATED_FORMS") {
+        setErro(
+          `O Paciente ${valor.nomePaciente}  ja foi agendado para esta data!`
+        );
+      } else if (error.response.data.codigo === "INVALID_DATE") {
+        setErro(`A data precisa ser maior que a data atual!`);
+      }
+      console.log(error);
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
+    },
+  });
+
   const cadastrar = (e) => {
     setLoading(true);
     e.preventDefault();
@@ -91,34 +126,7 @@ export default function Forms() {
       periodo: e.target.periodo.value,
     };
 
-    axios
-      .post(`${url}/forms/create`, dados)
-      .then((response) => {
-        limpar();
-
-        setLoading(false);
-        sucesso();
-
-        queryClient.invalidateQueries(["pacientes"]);
-
-        setTimeout(() => {
-          setErro(false);
-        }, 3000);
-      })
-      .catch((error) => {
-        // setErro(error.response.data.message);
-        if (error.response.data.codigo === "DUPLICATED_FORMS") {
-          setErro(
-            `O Paciente ${valor.nomePaciente}  ja foi agendado para esta data!`
-          );
-        } else if (error.response.data.codigo === "INVALID_DATE") {
-          setErro(`A data precisa ser maior que a data atual!`);
-        }
-        console.log(error);
-        setTimeout(() => {
-          setLoading(false);
-        }, 3000);
-      });
+    mutation.mutate(dados);
   };
 
   return (
