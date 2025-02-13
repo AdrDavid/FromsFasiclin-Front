@@ -45,21 +45,19 @@ export default function Forms() {
                         unid => unid.nomeUnidade.toLowerCase() === nomeUnidade.toLowerCase()
                     )
                     console.log("ENCONTRADA ",unidadeEncontrada)
+                    console.log("ENCONTRADA ID UNIDADE",unidadeEncontrada.id)
 
-                    
+                    setUnidadeID(unidadeEncontrada.id)
+
                     if(unidadeEncontrada){
-                        setUnidadeID(unidadeEncontrada.id)
                         setValor((prev) => ({
                             ...prev,
                             unidade: unidadeEncontrada.id.toString()
                         }));
                     }else {
                         toast.error("Unidade não encontrada");
-                        navigate('/forms/florença');
+                        navigate('/forms');
                     }
-                }else{
-                    toast.error("Nunhuma unidade no parametro! redirecionando para Florença-Sinop");
-                        navigate('/forms/florença');
                 }
 
                 

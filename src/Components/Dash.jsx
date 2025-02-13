@@ -20,207 +20,237 @@ import ModalNovoUnidade from "./ModalNovoUnidade";
 import Tables from "./Tables";
 
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  useQueries,
+    useQuery,
+    useMutation,
+    useQueryClient,
+    useQueries,
 } from "@tanstack/react-query";
 
 export default function Desh() {
-  const [userLevel, setUserLevel] = useState(
-    localStorage.getItem("userLevel") || "DASH"
-  );
+    const [userLevel, setUserLevel] = useState(
+        localStorage.getItem("userLevel") || "DASH"
+    );
 
-  const [pageSizeTables, setPageSizeTables] = useState({
-    tablePacientesMax: 20,
-    tablePacientesMin: 0,
-    tableUsersMax: 10,
-    tableUsersMin: 0,
-    tableUnidadesMax: 10,
-    tableUnidadesMin: 0,
-  });
+    const [pageSizeTables, setPageSizeTables] = useState({
+        tablePacientesMax: 20,
+        tablePacientesMin: 0,
+        tableUsersMax: 10,
+        tableUsersMin: 0,
+        tableUnidadesMax: 10,
+        tableUnidadesMin: 0,
+    });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const verificarLevel = async () => {
-      try {
-        const response = await axios.get(`${url}/auth/validate`, {
-          headers: {
-            Authorization: `${token} `,
-          },
-        });
-        // localStorage.setItem("userLevel", response.data);
-        setUserLevel(response.data.cargo);
-        console.log("CARgO DO USUARIO: ", response.data.cargo);
-      } catch (error) {
-        console.log(error);
-      }
+    const [dadosUsuario, setDadosUsuario] = useState([]);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const verificarLevel = async () => {
+            try {
+                const response = await axios.get(`${url}/auth/validate`, {
+                    headers: {
+                        Authorization: `${token} `,
+                    },
+                });
+                // localStorage.setItem("userLevel", response.data);
+                setUserLevel(response.data.cargo);
+                setDadosUsuario(response.data);
+                console.log("CARGO DO USUARIO: ", response.data.cargo);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        verificarLevel();
+    }, []);
+
+    console.log("USUARIO: ", dadosUsuario.unidadeId);
+
+    const [unidade, setUnidade] = useState([]);
+
+    const getUnidades = async () => {
+        const response = await axios.get(`${url}/unidades`);
+        setUnidade(response.data);
     };
 
-    verificarLevel();
-  }, []);
+    useEffect(() => {
+        getUnidades();
+    }, []);
 
-  // console.log(userLevel);
+    console.log(unidade);
 
-  const dataAtual = new Date();
-  let diaAtual = dataAtual.getDate();
-  const mesAtual = dataAtual.getMonth() + 1;
-  const anoAtual = dataAtual.getFullYear();
 
-  if (diaAtual < 10) {
-    diaAtual = `0${diaAtual}`;
-  }
-  let dataDeHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
+    // console.log(userLevel);
 
-  const [filtrar, setFiltrar] = useState({
-    tipoPaciente: "",
-    periodo: "",
-    dataExpedicao: dataDeHoje,
-    nomePaciente: "",
-    nomeAluno: "",
-    sobrenomeAluno: "",
-    clinica: "",
-  });
+    const dataAtual = new Date();
+    let diaAtual = dataAtual.getDate();
+    const mesAtual = dataAtual.getMonth() + 1;
+    const anoAtual = dataAtual.getFullYear();
 
-  const limpar = () => {
-    setFiltrar({
-      tipoPaciente: "",
-      periodo: "",
-      dataExpedicao: "",
-      nomePaciente: "",
-      nomeAluno: "",
-      sobrenomeAluno: "",
-      clinica: "",
+    if (diaAtual < 10) {
+        diaAtual = `0${diaAtual}`;
+    }
+    let dataDeHoje = `${anoAtual}-${mesAtual}-${diaAtual}`;
+
+    const [filtrar, setFiltrar] = useState({
+        tipoPaciente: "",
+        periodo: "",
+        dataExpedicao: dataDeHoje,
+        nomePaciente: "",
+        nomeAluno: "",
+        sobrenomeAluno: "",
+        clinica: "",
     });
-  };
 
-  const handleFiltrar = (event) => {
-    const { name, value } = event.target;
-    setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
-  };
+    const limpar = () => {
+        setFiltrar({
+            tipoPaciente: "",
+            periodo: "",
+            dataExpedicao: "",
+            nomePaciente: "",
+            nomeAluno: "",
+            sobrenomeAluno: "",
+            clinica: "",
+        });
+    };
 
-  // Requisicao unidade paciente e usuario
-  //////////////////////////////////////////
-  const [modal, setModal] = useState(false);
-  const [modalNovoUnidade, setModalNovoUnidade] = useState(false);
+    const handleFiltrar = (event) => {
+        const { name, value } = event.target;
+        setFiltrar((prevFiltrar) => ({ ...prevFiltrar, [name]: value }));
+    };
 
-  const { data: unidades = [], refetch: refetchUnidades } = useQuery({
-    queryKey: ["unidades"],
-    queryFn: async () => {
-      const response = await axios.get(`${url}/unidades`);
-      return response.data;
-    },
-  });
+    // Requisicao unidade paciente e usuario
+    //////////////////////////////////////////
+    const [modal, setModal] = useState(false);
+    const [modalNovoUnidade, setModalNovoUnidade] = useState(false);
 
-  const { data: users = [], refetch: refetchUsers } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const response = await axios.get(`${url}/usuarios/all`, {
-        headers: {
-          Authorization: `${localStorage.getItem("token")}`,
+    const { data: unidades = [], refetch: refetchUnidades } = useQuery({
+        queryKey: ["unidades"],
+        queryFn: async () => {
+            const response = await axios.get(`${url}/unidades`);
+
+            return response.data;
         },
-      });
-      return response.data;
-    },
-  });
+    });
 
-  const { data: pacientes = [], refetch: refetchPacientes } = useQuery({
-    queryKey: ["pacientes"],
-    queryFn: async () => {
-      const response = await axios.get(
-        userLevel === "DASH" ? `${url}/forms` : `${url}/forms/all`,
+    const { data: users = [], refetch: refetchUsers } = useQuery({
+        queryKey: ["users"],
+        queryFn: async () => {
+            const response = await axios.get(`${url}/usuarios/all`, {
+                headers: {
+                    Authorization: `${localStorage.getItem("token")}`,
+                },
+            });
+            return response.data;
+        },
+    });
 
-        {
-          headers: {
-            Authorization: `${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    const { data: pacientes = [], refetch: refetchPacientes } = useQuery({
+        queryKey: ["pacientes"],
+        queryFn: async () => {
+            const response = await axios.get(
+                userLevel === "DASH" ? `${url}/forms` : `${url}/forms/all`,
 
-      return response.data
-        ? response.data.map((paciente) => ({
-            ...paciente,
-            dataExpedicao: format(
-              new Date(paciente.dataExpedicao),
-              "yyyy-MM-dd"
-            ),
-          }))
-        : [];
-    },
+                {
+                    headers: {
+                        Authorization: `${localStorage.getItem("token")}`,
+                    },
+                }
+            );
 
-    refetchInterval: 300000,
-    refetchIntervalInBackground: true,
-  });
+            return response.data
+                ? response.data.map((paciente) => ({
+                    ...paciente,
+                    dataExpedicao: format(
+                        new Date(paciente.dataExpedicao),
+                        "yyyy-MM-dd"
+                    ),
+                }))
+                : [];
+        },
 
-  /////////////////////////////////////////////
+        refetchInterval: 300000,
+        refetchIntervalInBackground: true,
+    });
 
-  return (
-    <>
-      {modalNovoUnidade && (
-        <ModalNovoUnidade
-          setModalNovoUnidade={setModalNovoUnidade}
-          unidades={unidades}
-        />
-      )}
+    /////////////////////////////////////////////
 
-      {modal && <ModalNovoUsuario setModal={setModal} unidades={unidades} />}
+    return (
+        <>
+            {modalNovoUnidade && (
+                <ModalNovoUnidade
+                    setModalNovoUnidade={setModalNovoUnidade}
+                    unidades={unidades}
+                />
+            )}
 
-      <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
-        <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
-          <img src={Logo} alt="" className="h-[70px]" />
-          <img src={Fasipe} alt="" className="h-[60px]" />
-          <div className=" min-h-[20px]  absolute right-[20px] top-[25px] ">
-            <Logout />
-          </div>
-        </div>
+            {modal && <ModalNovoUsuario setModal={setModal} unidades={unidades} />}
 
-        {userLevel === "ADMIN" ? (
-          <>
-            <br />
-            <Tables
-              setModal={setModal}
-              unidades={unidades}
-              users={users}
-              setModalNovoUnidade={setModalNovoUnidade}
-              pageSizeTables={pageSizeTables}
-              setPageSizeTables={setPageSizeTables}
-              filtro={() => filtro(pacientes, filtrar)}
-            ></Tables>
-          </>
-        ) : null}
+            <div className="p-[20px] 2xl:w-[1400px] xl:w-[1200px] md:w-[800px] w-[100%] m-auto">
+                <div className="h-[100px]  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center relative ">
+                    <img src={Logo} alt="" className="h-[70px]" />
+                    <img src={Fasipe} alt="" className="h-[60px]" />
+                    <div className="flex gap-[20px] absolute right-[20px]  items-center justify-center">
+                        
+                    <div className="text-[#0ea13f] font-bold uppercase">
+                        {unidade.map((unidade) => {
+                            if (unidade.id === dadosUsuario.unidadeId) {
 
-        <br />
-        <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]">
-          <FiltroComponente
-            filtrar={filtrar}
-            setFiltrar={setFiltrar}
-            handleFiltrar={handleFiltrar}
-            limpar={limpar}
-          />
+                                return <span>{unidade.nomeUnidade}</span>;
+                            }
+                        })}
+                    </div>
+                    <div className=" ">
+                        <Logout />
+                    </div>
+                    </div>
+                </div>
 
-          <br />
-          <div className="flex justify-end">
-            <button
-              onClick={() => {
-                geraPDF(filtro(pacientes, filtrar));
-              }}
-              className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
-            >
-              <FaRegFilePdf />
-            </button>
-          </div>
+                {userLevel === "ADMIN" ? (
+                    <>
+                        <br />
+                        <Tables
+                            setModal={setModal}
+                            unidades={unidades}
+                            users={users}
+                            setModalNovoUnidade={setModalNovoUnidade}
+                            pageSizeTables={pageSizeTables}
+                            setPageSizeTables={setPageSizeTables}
+                            filtro={() => filtro(pacientes, filtrar)}
+                        ></Tables>
+                    </>
+                ) : null}
 
-          <TabelaFiltrada
-            filtro={() => filtro(pacientes, filtrar)}
-            pacientes={pacientes}
-            pageSizeTables={pageSizeTables}
-            setPageSizeTables={setPageSizeTables}
-          />
+                <br />
+                <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]">
+                    <FiltroComponente
+                        filtrar={filtrar}
+                        setFiltrar={setFiltrar}
+                        handleFiltrar={handleFiltrar}
+                        limpar={limpar}
+                    />
 
-          <br />
-        </div>
-        <br />
-      </div>
-    </>
-  );
+                    <br />
+                    <div className="flex justify-end">
+                        <button
+                            onClick={() => {
+                                geraPDF(filtro(pacientes, filtrar));
+                            }}
+                            className="rounded-[8px] p-[10px]  text-[35px] h-[40px]  "
+                        >
+                            <FaRegFilePdf />
+                        </button>
+                    </div>
+
+                    <TabelaFiltrada
+                        filtro={() => filtro(pacientes, filtrar)}
+                        pacientes={pacientes}
+                        pageSizeTables={pageSizeTables}
+                        setPageSizeTables={setPageSizeTables}
+                    />
+
+                    <br />
+                </div>
+                <br />
+            </div>
+        </>
+    );
 }

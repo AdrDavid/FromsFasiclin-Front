@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
+import { FiLogOut } from "react-icons/fi";
 export default function Logout() {
   const navigate = useNavigate();
 
@@ -17,9 +17,9 @@ export default function Logout() {
   return (
     <button
       onClick={Logout}
-      className="text-[#6e6e6e] text-[16px] absolute right-[0px]"
+      className="text-[#6e6e6e] text-[40px]  mt-[5px]  "
     >
-      Logout
+      <FiLogOut />
     </button>
   );
 }

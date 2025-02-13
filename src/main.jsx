@@ -38,6 +38,10 @@ const router = createBrowserRouter([
         path: "/forms",
         element: <Forms />,
       },
+      {
+        path: "/forms/:nomeUnidade",
+        element: <Forms />,
+      },
     ],
   },
 ]);
