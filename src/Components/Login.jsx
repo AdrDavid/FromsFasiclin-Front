@@ -17,13 +17,13 @@ export default function Login() {
         senha: e.target.senha.value,
       })
       .then((response) => {
-        console.log("Login response:", response.data);
+       // console.log("Login response:", response.data);
         localStorage.setItem("token", response.data.token);
-        console.log("cargo");
+       // console.log("cargo");
         localStorage.setItem("userLevel", response.data);
         navigate("/dashboard");
 
-        console.log(response);
+       // console.log(response);
       })
       .catch((error) => {
         if (error) {

@@ -5,60 +5,60 @@ import url from "./url";
 import Logo from "../assets/Images/Logo.png";
 
 const PrivateRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const location = useLocation();
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const location = useLocation();
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem("token");
+    useEffect(() => {
+        const verifyToken = async () => {
+            const token = localStorage.getItem("token");
 
-      // const user = localStorage.getItem("userLevel", response.data.cargo);
+            // const user = localStorage.getItem("userLevel", response.data.cargo);
 
-      if (!token) {
-        setIsAuthenticated(false);
-        return;
-      }
+            if (!token) {
+                setIsAuthenticated(false);
+                return;
+            }
 
-      try {
-        const response = await axios.get(`${url}/auth/validate`, {
-          headers: {
-            Authorization: `${token} `,
-          },
-        });
+            try {
+                const response = await axios.get(`${url}/auth/validate`, {
+                    headers: {
+                        Authorization: `${token} `,
+                    },
+                });
 
-        console.log("TESTANDO //////////////");
-        console.log(response.data);
+                // console.log("TESTANDO //////////////");
+                //  console.log(response.data);
 
-        setIsAuthenticated(true);
-      } catch (error) {
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-      }
-    };
+                setIsAuthenticated(true);
+            } catch (error) {
+                localStorage.removeItem("token");
+                setIsAuthenticated(false);
+            }
+        };
 
-    verifyToken();
-  }, []);
+        verifyToken();
+    }, []);
 
-  if (isAuthenticated === null) {
-    return (
-      <div className="w-[100%] h-[100vh] bg-[#e2e2e2]">
-        <div className="w-[100%] h-[100vh] flex justify-center flex-col items-center">
-          <img src={Logo} alt="" className="animate-pulse  w-[300px] " />
-          <br />
-          <br />
-          <p className="text-[#31a358] text-[20px] tracking-[7px] text-center mt-[30px]">
-            Loading...
-          </p>
-        </div>
-      </div>
-    );
-  }
+    if (isAuthenticated === null) {
+        return (
+            <div className="w-[100%] h-[100vh] bg-[#e2e2e2]">
+                <div className="w-[100%] h-[100vh] flex justify-center flex-col items-center">
+                    <img src={Logo} alt="" className="animate-pulse  w-[300px] " />
+                    <br />
+                    <br />
+                    <p className="text-[#31a358] text-[20px] tracking-[7px] text-center mt-[30px]">
+                        Loading...
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" state={{ from: location }} replace />;
-  }
+    if (!isAuthenticated) {
+        return <Navigate to="/" state={{ from: location }} replace />;
+    }
 
-  return children;
+    return children;
 };
 
 export default PrivateRoute;

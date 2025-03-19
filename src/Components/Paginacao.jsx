@@ -39,7 +39,7 @@ export default function Paginacao({
     setPage(page + 1);
   };
 
-  console.log(page);
+  //console.log(page);
 
   const handlePrev = (pagesize) => {
     const minKey = `table${tableType}Min`;

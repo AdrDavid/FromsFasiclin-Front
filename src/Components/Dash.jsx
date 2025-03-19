@@ -53,16 +53,16 @@ export default function Desh() {
                 // localStorage.setItem("userLevel", response.data);
                 setUserLevel(response.data.cargo);
                 setDadosUsuario(response.data);
-                console.log("CARGO DO USUARIO: ", response.data.cargo);
+                //console.log("CARGO DO USUARIO: ", response.data.cargo);
             } catch (error) {
-                console.log(error);
+               // console.log(error);
             }
         };
 
         verificarLevel();
     }, []);
 
-    console.log("USUARIO: ", dadosUsuario.unidadeId);
+    //console.log("USUARIO: ", dadosUsuario.unidadeId);
 
     const [unidade, setUnidade] = useState([]);
 
@@ -75,7 +75,7 @@ export default function Desh() {
         getUnidades();
     }, []);
 
-    console.log(unidade);
+   // console.log(unidade);
 
 
     // console.log(userLevel);

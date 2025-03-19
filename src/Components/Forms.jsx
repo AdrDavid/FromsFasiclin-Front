@@ -37,14 +37,14 @@ export default function Forms() {
             .get(`${url}/unidades`)
             .then((response) => {
                 setUnidade(response.data);
-                console.log("Unidades carregadas:", response.data);
-                console.log("Nome da unidade na URL:", nomeUnidade);
+             ///   console.log("Unidades carregadas:", response.data);
+               // console.log("Nome da unidade na URL:", nomeUnidade);
 
                 if(nomeUnidade){
                     const unidadeEncontrada = response.data.find(
                         unid => unid.nomeUnidade.toLowerCase() === nomeUnidade.toLowerCase()
                     )
-                    console.log("ENCONTRADA ",unidadeEncontrada)
+                  //  console.log("ENCONTRADA ",unidadeEncontrada)
 
                     
                     if(unidadeEncontrada){
@@ -58,7 +58,7 @@ export default function Forms() {
                         navigate('/forms/florença');
                     }
                 }else{
-                    toast.error("Nunhuma unidade no parametro! redirecionando para Florença-Sinop");
+                    toast.warning("Aviso! Você Foi automaticamente direcionado para Fasipe Florença-Sinop");
                         navigate('/forms/florença');
                 }
 
@@ -66,12 +66,12 @@ export default function Forms() {
 
             })
             .catch((error) => {
-                console.log(error);
+             //   console.log(error);
             });
     }, [nomeUnidade]);
 
     useEffect(() => {
-        console.log("Valor atual da unidade:", valor.unidade);
+       // console.log("Valor atual da unidade:", valor.unidade);
     }, [valor.unidade]);
 
     // const cadastro = (e) => {
@@ -132,7 +132,7 @@ export default function Forms() {
             sucesso();
         },
         onError: (error) => {
-            console.log(error);
+          //  console.log(error);
             // setErro(error.response.data.message);
             if (error.response.data.codigo === "DUPLICATED_FORMS") {
                 setErro(
@@ -141,7 +141,7 @@ export default function Forms() {
             } else if (error.response.data.codigo === "INVALID_DATE") {
                 setErro(`A data precisa ser maior que a data atual!`);
             }
-            console.log(error);
+          //  console.log(error);
             setTimeout(() => {
                 setLoading(false);
             }, 3000);
@@ -173,10 +173,13 @@ export default function Forms() {
             <ToastContainer />
             <div className="p-[20px] md:w-[800px] w-[100%] m-auto">
                 <form action="" onSubmit={cadastrar}>
-                    <div className="h-[100px] relative  w-[100%] m-auto bg-[#ffffff] pl-[20px] rounded-[8px] flex gap-[20px] items-center ">
+                    <div className="min-h-[100px] relative  w-[100%] m-auto bg-[#ffffff] pt-[20px] pb-[20px] pr-[20px] pl-[20px] rounded-[8px] flex flex-wrap justify-between gap-[20px] items-center ">
+                        <div className="flex">
+
                         <img src={Logo} alt="" className="h-[70px]" />
                         <img src={Fasipe} alt="" className="h-[60px]" />
-                        <span className="text-[25px] font-bold text-[#0ea13f] absolute right-[20px] uppercase ">{nomeUnidade}</span>
+                        </div>
+                        <span className="text-[25px] font-bold text-[#0ea13f] uppercase ">{nomeUnidade}</span>
                     </div>
                     <br />
                     <div className="min-h-[400px] pt-[50px] p-[20px]  w-[100%] m-auto bg-[#ffffff] rounded-[8px]  ">
